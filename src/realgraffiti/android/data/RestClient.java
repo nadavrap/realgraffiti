@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
@@ -68,7 +69,7 @@ public class RestClient {
         headers.add(new BasicNameValuePair(name, value));
     }
  
-    public void Execute(RequestMethod method) throws Exception
+    public void Execute(RequestMethod method)
     {
         switch(method) {
             case GET:
@@ -79,7 +80,13 @@ public class RestClient {
                     combinedParams += "?";
                     for(NameValuePair p : params)
                     {
-                        String paramString = p.getName() + "=" + URLEncoder.encode(p.getValue(),"UTF-8");
+                        String paramString;
+						try {
+							paramString = p.getName() + "=" + URLEncoder.encode(p.getValue(),"UTF-8");
+						} catch (UnsupportedEncodingException e) {
+							// TODO Auto-generated catch block
+							throw new RestClientException("RestClient error", e);
+						}
                         if(combinedParams.length() > 1)
                         {
                             combinedParams  +=  "&" + paramString;
@@ -113,7 +120,12 @@ public class RestClient {
                 }
  
                 if(!params.isEmpty()){
-                    request.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+                    try {
+						request.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+					} catch (UnsupportedEncodingException e) {
+						// TODO Auto-generated catch block
+						throw new RestClientException("RestClient error", e);
+					}
                 }
  
                 executeRequest(request, url);
@@ -146,10 +158,10 @@ public class RestClient {
  
         } catch (ClientProtocolException e)  {
             client.getConnectionManager().shutdown();
-            e.printStackTrace();
+            throw new RestClientException("RestClient error", e);
         } catch (IOException e) {
             client.getConnectionManager().shutdown();
-            e.printStackTrace();
+            throw new RestClientException("RestClient error", e);
         }
     }
  
@@ -164,14 +176,24 @@ public class RestClient {
                 sb.append(line + "\n");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RestClientException("RestClient error", e);
         } finally {
             try {
                 is.close();
             } catch (IOException e) {
-                e.printStackTrace();
+            	throw new RestClientException("RestClient error", e);
             }
         }
         return sb.toString();
+    }
+    
+    public static class RestClientException extends RuntimeException{
+    	public RestClientException(String message){
+    		super(message);
+    	}
+    	
+    	public RestClientException(String message, Throwable innerException){
+    		super(message, innerException);
+    	}
     }
 }
