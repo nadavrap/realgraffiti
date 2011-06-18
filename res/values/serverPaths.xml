@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="RealGraffitiDataServlet">http://10.0.2.2:8888/RealGraffitiData</string>
-    <string name="serverInfoServlet">http://10.0.2.2:8888/ServerInfo</string>
+    <string name="RealGraffitiDataServlet">RealGraffitiData</string>
+    <string name="serverInfoServlet">ServerInfo</string>
+    <string name="ServerPath">http://10.0.2.2:8888</string>
 </resources>
