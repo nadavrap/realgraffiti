@@ -2,6 +2,7 @@ package realgraffiti.android;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import realgraffiti.android.data.RealGraffitiDataProxy;
 import realgraffiti.common.dto.GraffitiDto;
@@ -31,7 +32,7 @@ public class Test extends Activity {
 				
 				String coordinates = "N234, E2345";
 				double angle = 30;
-				Collection<Double> siftDisc = new ArrayList<Double>();
+				List<Double> siftDisc = new ArrayList<Double>();
 				siftDisc.add(1.1);
 				siftDisc.add(3.1);
 				GraffitiLocationParametersDto glp = new GraffitiLocationParametersDto(coordinates, angle, siftDisc);

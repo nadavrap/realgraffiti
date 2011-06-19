@@ -124,10 +124,12 @@ public class RestClient {
 	}
 
 	private void prepareMultipartPostRequest(HttpPost request) {
+		int i = 0;
+		
 		for(String name:files.keySet()){
 			MultipartEntity httpEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
-			ByteArrayBody fileContent = new ByteArrayBody(files.get(name),"image/jpeg", name);
-			httpEntity.addPart("data", fileContent);
+			ByteArrayBody fileContent = new ByteArrayBody(files.get(name), name);
+			httpEntity.addPart("file" + i, fileContent);
 			
 			if(!params.isEmpty()){
 				for(NameValuePair param: params){

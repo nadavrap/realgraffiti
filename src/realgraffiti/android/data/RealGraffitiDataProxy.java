@@ -41,7 +41,7 @@ public class RealGraffitiDataProxy implements RealGraffitiData{
 		
 		Log.d("realgraffiti", "object json: " + gson.toJson(graffitiDto));
 		RestClient client = new RestClient(uploadUrl);
-		//client.addParam("object", gson.toJson(graffitiDto));
+		client.addParam("object", gson.toJson(graffitiDto, GraffitiDto.class));
 		client.addFile("file", graffitiDto.get_imageData());
 		
 		client.execute(RequestMethod.POST);
