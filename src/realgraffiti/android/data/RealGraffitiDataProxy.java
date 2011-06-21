@@ -29,24 +29,19 @@ public class RealGraffitiDataProxy implements RealGraffitiData{
 	}
 	
 	@Override
-	public boolean addNewGraffiti(GraffitiDto graffitiDto){
-		String serverPath = _context.getString(R.string.ServerPath);
-		
-		String uploadUrl = serverPath + getUploadUrl();
+	public boolean addNewGraffiti(GraffitiDto graffitiDto){	
+		String uploadUrl = getUploadUrl();
 		Log.d("realgraffiti", "upload url: " + uploadUrl);
 		
-		Gson gson = new GsonBuilder()
-			.addSerializationExclusionStrategy(new SkipTypeStrategy(Byte[].class))
-			.create();
-		
-		Log.d("realgraffiti", "object json: " + gson.toJson(graffitiDto));
 		RestClient client = new RestClient(uploadUrl);
-		client.addParam("object", gson.toJson(graffitiDto, GraffitiDto.class));
+		client.addParam("object", graffitiDto);
 		client.addFile("file", graffitiDto.get_imageData());
 		
 		client.execute(RequestMethod.POST);
+		
 		int responseCode = client.getResponseCode();
 		String response = client.getResponse();
+		
 		Log.d("realgraffiti", "request reponse: " + response);
 		return responseCode == HttpURLConnection.HTTP_OK;
 	}
@@ -58,11 +53,11 @@ public class RealGraffitiDataProxy implements RealGraffitiData{
 		RestClient client = new RestClient(url);
 		client.addParam("action", action);
 		
-		client.execute(RequestMethod.GET);
+		client.execute(RequestMethod.POST);
 		
 		String uploadUrl = client.getResponse();
 		
-		return uploadUrl.trim();
+		return serverPath + uploadUrl.trim();
 	}
 	
 	@Override
