@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="addGraffiti">addGraffiti</string>
+    <string name="getNearByGraffiti">getNearByGraffiti</string>
+    <string name="getGraffitiImageKey">getGraffitiImageKey</string>
+</resources>

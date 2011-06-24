@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -220,6 +221,14 @@ public class RestClient {
         return sb.toString();
     }
     
+    public Object getResponseObject(Type type){
+    	Gson gson = new Gson();
+    	String json = getResponse().trim();
+    	Object responseObject = gson.fromJson(json, type);
+    	
+    	return responseObject;
+    }
+    
     @SuppressWarnings("serial")
 	public static class RestClientException extends RuntimeException{
     	public RestClientException(String message){
@@ -230,4 +239,6 @@ public class RestClient {
     		super(message, innerException);
     	}
     }
+    
+    
 }

@@ -8,10 +8,13 @@ import realgraffiti.android.data.RealGraffitiDataProxy;
 import realgraffiti.common.dto.GraffitiDto;
 import realgraffiti.common.dto.GraffitiLocationParametersDto;
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 public class Test extends Activity {
@@ -21,12 +24,9 @@ public class Test extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
-        
-        
         Button button = (Button)findViewById(R.id.button1);
         button.setOnClickListener(new OnClickListener() {
-			
-			@Override
+		@Override
 			public void onClick(View v) {
 				RealGraffitiDataProxy graffitiData = new RealGraffitiDataProxy(getApplicationContext());
 				
@@ -42,6 +42,21 @@ public class Test extends Activity {
 				g.set_imageData(imageData);
 				
 		        graffitiData.addNewGraffiti(g);
+			}
+		});
+        
+        
+        
+        button = (Button)findViewById(R.id.getButton);
+        button.setOnClickListener(new OnClickListener() {
+		@Override
+			public void onClick(View v) {
+				RealGraffitiDataProxy graffitiData = new RealGraffitiDataProxy(getApplicationContext());
+				
+		        GraffitiLocationParametersDto graffitiLocationParameters = new GraffitiLocationParametersDto("asdf", 34, null);
+				Collection<GraffitiDto> graffiities = graffitiData.getNearByGraffiti(graffitiLocationParameters);
+				ListView listView = (ListView)findViewById(R.id.listView1);
+				listView.setAdapter(new ArrayAdapter<GraffitiDto>(Test.this, android.R.layout.test_list_item, (List<GraffitiDto>)graffiities ));
 			}
 		});
 

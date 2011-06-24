@@ -3,6 +3,7 @@ package realgraffiti.android.data;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import com.google.gson.ExclusionStrategy;
@@ -24,6 +25,9 @@ import realgraffiti.common.dto.GraffitiLocationParametersDto;
 public class RealGraffitiDataProxy implements RealGraffitiData{
 	private Context _context;
 	
+	private final String ACTION_KEY = "action";
+	private final String ACTION_PARAMETER_KEY = "object";
+	
 	public RealGraffitiDataProxy(Context context){
 		_context = context;
 	}
@@ -34,6 +38,7 @@ public class RealGraffitiDataProxy implements RealGraffitiData{
 		Log.d("realgraffiti", "upload url: " + uploadUrl);
 		
 		RestClient client = new RestClient(uploadUrl);
+		client.addParam(ACTION_KEY, _context.getString(R.string.addGraffiti));
 		client.addParam("object", graffitiDto);
 		client.addFile("file", graffitiDto.get_imageData());
 		
@@ -63,20 +68,33 @@ public class RealGraffitiDataProxy implements RealGraffitiData{
 	@Override
 	public Collection<GraffitiDto> getNearByGraffiti(
 			GraffitiLocationParametersDto graffitiLocationParameters) {
-		// TODO Auto-generated method stub
-		return null;
+		String url = _context.getString(R.string.ServerPath);
+		url += "/" + _context.getString(R.string.RealGraffitiDataServlet);
+		
+		RestClient client = new RestClient(url);
+		String actionName = _context.getString(R.string.getNearByGraffiti);
+		client.addParam(ACTION_KEY, actionName);
+		client.addParam(ACTION_PARAMETER_KEY, graffitiLocationParameters);
+		
+		client.execute(RestClient.RequestMethod.POST);
+	
+		ArrayList<GraffitiDto> test = new ArrayList<GraffitiDto>();
+		
+		Collection<GraffitiDto> nearByGraffiti = (ArrayList<GraffitiDto>)client.getResponseObject( test.getClass());
+		return nearByGraffiti;		
 	}
+	
 	  public class SkipTypeStrategy implements ExclusionStrategy {
 		    private final Class<?> typeToSkip;
-
+	
 		    private SkipTypeStrategy(Class<?> typeToSkip) {
 		      this.typeToSkip = typeToSkip;
 		    }
-
+	
 		    public boolean shouldSkipClass(Class<?> clazz) {
 		      return false;
 		    }
-
+	
 		    public boolean shouldSkipField(FieldAttributes f) {
 		      return f.getClass().equals(typeToSkip);
 		    }
