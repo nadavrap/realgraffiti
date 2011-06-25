@@ -10,8 +10,11 @@ import realgraffiti.common.dto.GraffitiLocationParametersDto;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -49,7 +52,7 @@ public class Test extends Activity {
         
         button = (Button)findViewById(R.id.getButton);
         button.setOnClickListener(new OnClickListener() {
-		@Override
+		
 			public void onClick(View v) {
 				RealGraffitiDataProxy graffitiData = new RealGraffitiDataProxy(getApplicationContext());
 				
@@ -59,6 +62,20 @@ public class Test extends Activity {
 				listView.setAdapter(new ArrayAdapter<GraffitiDto>(Test.this, android.R.layout.test_list_item, (List<GraffitiDto>)graffiities ));
 			}
 		});
+        
+        ListView listView = (ListView)findViewById(R.id.listView1);
+        listView.setOnItemClickListener(new OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view,
+                    int position, long id) {
+            	RealGraffitiDataProxy graffitiData = new RealGraffitiDataProxy(getApplicationContext());
+            	
+        		ArrayAdapter<GraffitiDto> adapter = (ArrayAdapter<GraffitiDto>)parent.getAdapter();
+        		GraffitiDto clickedGraffiti = adapter.getItem(position);
+        		
+        		byte[] imageData = graffitiData.getGraffitiImage(clickedGraffiti.getKey());
+        		Log.d("realgraffiti", "clicked graffiti: " + imageData.toString());
+            }
+        });
 
     }
 }

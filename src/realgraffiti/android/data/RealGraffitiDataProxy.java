@@ -1,6 +1,7 @@
 package realgraffiti.android.data;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 
 import android.content.Context;
@@ -78,10 +80,25 @@ public class RealGraffitiDataProxy implements RealGraffitiData{
 		
 		client.execute(RestClient.RequestMethod.POST);
 	
-		ArrayList<GraffitiDto> test = new ArrayList<GraffitiDto>();
-		
-		Collection<GraffitiDto> nearByGraffiti = (ArrayList<GraffitiDto>)client.getResponseObject( test.getClass());
+		Type collectionType = new TypeToken<ArrayList<GraffitiDto>>(){}.getType();
+		Collection<GraffitiDto> nearByGraffiti = (ArrayList<GraffitiDto>)client.getResponseObject(collectionType);
 		return nearByGraffiti;		
+	}
+	
+	@Override
+	public byte[] getGraffitiImage(Long graffitiKey) {
+		String url = _context.getString(R.string.ServerPath);
+		url += "/" + _context.getString(R.string.RealGraffitiDataServlet);
+			
+		RestClient client = new RestClient(url);
+		
+		String actionName =  _context.getString(R.string.getGraffitiImage);
+		client.addParam(ACTION_KEY, actionName);
+		client.addParam(ACTION_PARAMETER_KEY, graffitiKey);
+		client.execute(RestClient.RequestMethod.POST);
+		
+		byte[] imageData = (byte[])client.getResponseObject(byte[].class);
+		return imageData;
 	}
 	
 	  public class SkipTypeStrategy implements ExclusionStrategy {
@@ -99,6 +116,8 @@ public class RealGraffitiDataProxy implements RealGraffitiData{
 		      return f.getClass().equals(typeToSkip);
 		    }
 		  }
+
+
 }
 
 
