@@ -35,7 +35,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
-public class RestClient {
+public class WebServiceClient {
 	 
     public enum RequestMethod {
 		POST
@@ -52,7 +52,7 @@ public class RestClient {
  
     private String response;
  
-    public RestClient(String url)
+    public WebServiceClient(String url)
     {
         this.url = url;
         params = new HashMap<String, Object> ();

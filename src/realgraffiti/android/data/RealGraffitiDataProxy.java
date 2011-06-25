@@ -19,7 +19,7 @@ import android.os.Debug;
 import android.util.Log;
 
 import realgraffiti.android.R;
-import realgraffiti.android.data.RestClient.RequestMethod;
+import realgraffiti.android.data.WebServiceClient.RequestMethod;
 import realgraffiti.common.data.RealGraffitiData;
 import realgraffiti.common.dto.GraffitiDto;
 import realgraffiti.common.dto.GraffitiLocationParametersDto;
@@ -39,7 +39,7 @@ public class RealGraffitiDataProxy implements RealGraffitiData{
 		String uploadUrl = getUploadUrl();
 		Log.d("realgraffiti", "upload url: " + uploadUrl);
 		
-		RestClient client = new RestClient(uploadUrl);
+		WebServiceClient client = new WebServiceClient(uploadUrl);
 		client.addParam(ACTION_KEY, _context.getString(R.string.addGraffiti));
 		client.addParam("object", graffitiDto);
 		client.addFile("file", graffitiDto.get_imageData());
@@ -57,7 +57,7 @@ public class RealGraffitiDataProxy implements RealGraffitiData{
 		String serverPath = _context.getString(R.string.ServerPath);
 		String url = serverPath + "/" +  _context.getString(R.string.serverInfoServlet);
 		String action = _context.getString(R.string.getUploadUrlAction);
-		RestClient client = new RestClient(url);
+		WebServiceClient client = new WebServiceClient(url);
 		client.addParam("action", action);
 		
 		client.execute(RequestMethod.POST);
@@ -73,12 +73,12 @@ public class RealGraffitiDataProxy implements RealGraffitiData{
 		String url = _context.getString(R.string.ServerPath);
 		url += "/" + _context.getString(R.string.RealGraffitiDataServlet);
 		
-		RestClient client = new RestClient(url);
+		WebServiceClient client = new WebServiceClient(url);
 		String actionName = _context.getString(R.string.getNearByGraffiti);
 		client.addParam(ACTION_KEY, actionName);
 		client.addParam(ACTION_PARAMETER_KEY, graffitiLocationParameters);
 		
-		client.execute(RestClient.RequestMethod.POST);
+		client.execute(WebServiceClient.RequestMethod.POST);
 	
 		Type collectionType = new TypeToken<ArrayList<GraffitiDto>>(){}.getType();
 		Collection<GraffitiDto> nearByGraffiti = (ArrayList<GraffitiDto>)client.getResponseObject(collectionType);
@@ -90,12 +90,12 @@ public class RealGraffitiDataProxy implements RealGraffitiData{
 		String url = _context.getString(R.string.ServerPath);
 		url += "/" + _context.getString(R.string.RealGraffitiDataServlet);
 			
-		RestClient client = new RestClient(url);
+		WebServiceClient client = new WebServiceClient(url);
 		
 		String actionName =  _context.getString(R.string.getGraffitiImage);
 		client.addParam(ACTION_KEY, actionName);
 		client.addParam(ACTION_PARAMETER_KEY, graffitiKey);
-		client.execute(RestClient.RequestMethod.POST);
+		client.execute(WebServiceClient.RequestMethod.POST);
 		
 		byte[] imageData = (byte[])client.getResponseObject(byte[].class);
 		return imageData;
