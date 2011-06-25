@@ -176,16 +176,19 @@ public class WebServiceClient {
  
         try {
             httpResponse = client.execute(request);
+            
             responseCode = httpResponse.getStatusLine().getStatusCode();
             message = httpResponse.getStatusLine().getReasonPhrase();
- 
+            
+            Log.d("realgraffiti", "Response code: " + responseCode);
+            
             HttpEntity entity = httpResponse.getEntity();
  
             if (entity != null) {
  
                 InputStream instream = entity.getContent();
                 response = convertStreamToString(instream);
- 
+                Log.d("realgraffiti", "Response content: " + response);
                 // Closing the input stream will trigger connection release
                 instream.close();
             }
@@ -239,6 +242,4 @@ public class WebServiceClient {
     		super(message, innerException);
     	}
     }
-    
-    
 }

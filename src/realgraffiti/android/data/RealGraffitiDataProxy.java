@@ -1,21 +1,14 @@
 package realgraffiti.android.data;
 
-import java.io.UnsupportedEncodingException;
+
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
-
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-
-
 import android.content.Context;
-import android.os.Debug;
 import android.util.Log;
 
 import realgraffiti.android.R;
@@ -36,20 +29,21 @@ public class RealGraffitiDataProxy implements RealGraffitiData{
 	
 	@Override
 	public boolean addNewGraffiti(GraffitiDto graffitiDto){	
+		Log.d("realgraffiti", "Add new graffiti");
+		
 		String uploadUrl = getUploadUrl();
-		Log.d("realgraffiti", "upload url: " + uploadUrl);
+		Log.d("realgraffiti", "Upload url: " + uploadUrl);
 		
 		WebServiceClient client = new WebServiceClient(uploadUrl);
 		client.addParam(ACTION_KEY, _context.getString(R.string.addGraffiti));
-		client.addParam("object", graffitiDto);
+		client.addParam(ACTION_PARAMETER_KEY, graffitiDto);
 		client.addFile("file", graffitiDto.get_imageData());
 		
 		client.execute(RequestMethod.POST);
 		
 		int responseCode = client.getResponseCode();
 		String response = client.getResponse();
-		
-		Log.d("realgraffiti", "request reponse: " + response);
+
 		return responseCode == HttpURLConnection.HTTP_OK;
 	}
 
@@ -58,7 +52,7 @@ public class RealGraffitiDataProxy implements RealGraffitiData{
 		String url = serverPath + "/" +  _context.getString(R.string.serverInfoServlet);
 		String action = _context.getString(R.string.getUploadUrlAction);
 		WebServiceClient client = new WebServiceClient(url);
-		client.addParam("action", action);
+		client.addParam(ACTION_KEY, action);
 		
 		client.execute(RequestMethod.POST);
 		
