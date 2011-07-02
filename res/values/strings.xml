@@ -2,4 +2,5 @@
 <resources>
     <string name="hello">Hello World, Test!</string>
     <string name="app_name">RealGraffiti</string>
+    <string name="mapview_name">Map view</string>
 </resources>

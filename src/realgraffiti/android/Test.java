@@ -28,7 +28,7 @@ public class Test extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        _graffitiData = new RealGraffitiLocalData();
+        _graffitiData = new RealGraffitiDataProxy(getApplicationContext());
         setContentView(R.layout.main);
         
         Button button = (Button)findViewById(R.id.button1);
@@ -36,7 +36,7 @@ public class Test extends Activity {
 		@Override
 			public void onClick(View v) {
 
-				String coordinates = "N234, E2345";
+				Coordinates coordinates = new Coordinates(123, 5433);
 				double angle = 30;
 				List<Double> siftDisc = new ArrayList<Double>();
 				siftDisc.add(1.1);
@@ -57,7 +57,7 @@ public class Test extends Activity {
         button.setOnClickListener(new OnClickListener() {
 		
 			public void onClick(View v) {
-		        GraffitiLocationParameters graffitiLocationParameters = new GraffitiLocationParameters("asdf", 34, null);
+		        GraffitiLocationParameters graffitiLocationParameters = new GraffitiLocationParameters(new Coordinates(123, 5433), 34, null);
 				Collection<Graffiti> graffiities = _graffitiData.getNearByGraffiti(graffitiLocationParameters);
 				ListView listView = (ListView)findViewById(R.id.listView1);
 				listView.setAdapter(new ArrayAdapter<Graffiti>(Test.this, android.R.layout.test_list_item, (List<Graffiti>)graffiities ));
