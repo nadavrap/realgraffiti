@@ -7,8 +7,7 @@ import java.util.List;
 import realgraffiti.android.data.RealGraffitiDataProxy;
 import realgraffiti.android.data.RealGraffitiLocalData;
 import realgraffiti.common.data.RealGraffitiData;
-import realgraffiti.common.dto.GraffitiDto;
-import realgraffiti.common.dto.GraffitiLocationParametersDto;
+import realgraffiti.common.dataObjects.*;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -42,10 +41,10 @@ public class Test extends Activity {
 				List<Double> siftDisc = new ArrayList<Double>();
 				siftDisc.add(1.1);
 				siftDisc.add(3.1);
-				GraffitiLocationParametersDto glp = new GraffitiLocationParametersDto(coordinates, angle, siftDisc);
+				GraffitiLocationParameters glp = new GraffitiLocationParameters(coordinates, angle, siftDisc);
 				
 				byte[] imageData = new byte[]{1,2,3,4};
-				GraffitiDto g = new GraffitiDto(glp);
+				Graffiti g = new Graffiti(glp);
 				g.set_imageData(imageData);
 				
 				_graffitiData.addNewGraffiti(g);
@@ -58,10 +57,10 @@ public class Test extends Activity {
         button.setOnClickListener(new OnClickListener() {
 		
 			public void onClick(View v) {
-		        GraffitiLocationParametersDto graffitiLocationParameters = new GraffitiLocationParametersDto("asdf", 34, null);
-				Collection<GraffitiDto> graffiities = _graffitiData.getNearByGraffiti(graffitiLocationParameters);
+		        GraffitiLocationParameters graffitiLocationParameters = new GraffitiLocationParameters("asdf", 34, null);
+				Collection<Graffiti> graffiities = _graffitiData.getNearByGraffiti(graffitiLocationParameters);
 				ListView listView = (ListView)findViewById(R.id.listView1);
-				listView.setAdapter(new ArrayAdapter<GraffitiDto>(Test.this, android.R.layout.test_list_item, (List<GraffitiDto>)graffiities ));
+				listView.setAdapter(new ArrayAdapter<Graffiti>(Test.this, android.R.layout.test_list_item, (List<Graffiti>)graffiities ));
 			}
 		});
         
@@ -69,8 +68,8 @@ public class Test extends Activity {
         listView.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                     int position, long id) {           	
-        		ArrayAdapter<GraffitiDto> adapter = (ArrayAdapter<GraffitiDto>)parent.getAdapter();
-        		GraffitiDto clickedGraffiti = adapter.getItem(position);
+        		ArrayAdapter<Graffiti> adapter = (ArrayAdapter<Graffiti>)parent.getAdapter();
+        		Graffiti clickedGraffiti = adapter.getItem(position);
         		
         		byte[] imageData = _graffitiData.getGraffitiImage(clickedGraffiti.getKey());
         		Log.d("realgraffiti", "clicked graffiti: " + imageData.toString());

@@ -14,8 +14,8 @@ import android.util.Log;
 import realgraffiti.android.R;
 import realgraffiti.android.data.WebServiceClient.RequestMethod;
 import realgraffiti.common.data.RealGraffitiData;
-import realgraffiti.common.dto.GraffitiDto;
-import realgraffiti.common.dto.GraffitiLocationParametersDto;
+import realgraffiti.common.dataObjects.*;
+
 
 public class RealGraffitiDataProxy implements RealGraffitiData{
 	private Context _context;
@@ -28,7 +28,7 @@ public class RealGraffitiDataProxy implements RealGraffitiData{
 	}
 	
 	@Override
-	public boolean addNewGraffiti(GraffitiDto graffitiDto){	
+	public boolean addNewGraffiti(Graffiti graffitiDto){	
 		Log.d("realgraffiti", "Add new graffiti");
 		
 		String uploadUrl = getUploadUrl();
@@ -62,8 +62,8 @@ public class RealGraffitiDataProxy implements RealGraffitiData{
 	}
 	
 	@Override
-	public Collection<GraffitiDto> getNearByGraffiti(
-			GraffitiLocationParametersDto graffitiLocationParameters) {
+	public Collection<Graffiti> getNearByGraffiti(
+			GraffitiLocationParameters graffitiLocationParameters) {
 		String url = _context.getString(R.string.ServerPath);
 		url += "/" + _context.getString(R.string.RealGraffitiDataServlet);
 		
@@ -74,8 +74,8 @@ public class RealGraffitiDataProxy implements RealGraffitiData{
 		
 		client.execute(WebServiceClient.RequestMethod.POST);
 	
-		Type collectionType = new TypeToken<ArrayList<GraffitiDto>>(){}.getType();
-		Collection<GraffitiDto> nearByGraffiti = (ArrayList<GraffitiDto>)client.getResponseObject(collectionType);
+		Type collectionType = new TypeToken<ArrayList<Graffiti>>(){}.getType();
+		Collection<Graffiti> nearByGraffiti = (ArrayList<Graffiti>)client.getResponseObject(collectionType);
 		return nearByGraffiti;		
 	}
 	
@@ -110,8 +110,6 @@ public class RealGraffitiDataProxy implements RealGraffitiData{
 		      return f.getClass().equals(typeToSkip);
 		    }
 		  }
-
-
 }
 
 

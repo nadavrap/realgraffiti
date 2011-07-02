@@ -5,27 +5,26 @@ import java.util.Collection;
 import java.util.List;
 
 import realgraffiti.common.data.RealGraffitiData;
-import realgraffiti.common.dto.GraffitiDto;
-import realgraffiti.common.dto.GraffitiLocationParametersDto;
+import realgraffiti.common.dataObjects.*;
 
 public class RealGraffitiLocalData implements RealGraffitiData{
 
-	private List<GraffitiDto> _graffiteis;
+	private List<Graffiti> _graffiteis;
 	
 	public RealGraffitiLocalData(){
-		_graffiteis = new ArrayList<GraffitiDto>();
+		_graffiteis = new ArrayList<Graffiti>();
 	}
 	@Override
-	public boolean addNewGraffiti(GraffitiDto GraffitiDto) {
+	public boolean addNewGraffiti(Graffiti GraffitiDto) {
 		GraffitiDto.setKey(new Long(_graffiteis.size()));
 		_graffiteis.add(GraffitiDto);
 		return true;
 	}
 
 	@Override
-	public Collection<GraffitiDto> getNearByGraffiti(
-			GraffitiLocationParametersDto graffitiLocationParameters) {
-		return new ArrayList<GraffitiDto>(_graffiteis);
+	public Collection<Graffiti> getNearByGraffiti(
+			GraffitiLocationParameters graffitiLocationParameters) {
+		return new ArrayList<Graffiti>(_graffiteis);
 	}
 
 	@Override
