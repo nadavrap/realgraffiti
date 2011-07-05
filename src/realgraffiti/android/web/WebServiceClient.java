@@ -1,4 +1,4 @@
-package realgraffiti.android.data;
+package realgraffiti.android.web;
 
 import java.io.BufferedReader;
 import java.io.IOException;

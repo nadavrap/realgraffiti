@@ -1,4 +1,4 @@
-package realgraffiti.android.data;
+package realgraffiti.android.web;
 
 
 import java.lang.reflect.Type;
@@ -12,7 +12,7 @@ import android.content.Context;
 import android.util.Log;
 
 import realgraffiti.android.R;
-import realgraffiti.android.data.WebServiceClient.RequestMethod;
+import realgraffiti.android.web.WebServiceClient.RequestMethod;
 import realgraffiti.common.data.RealGraffitiData;
 import realgraffiti.common.dataObjects.*;
 
