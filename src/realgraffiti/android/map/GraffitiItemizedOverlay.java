@@ -28,18 +28,20 @@ public class GraffitiItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 		
 		_overlays.add(overlay);
 		
-		populate();
+		
 	}
 	
 	public void addGraffities(Collection<Graffiti> graffities){
 		for(Graffiti graffiti: graffities){
 			addGraffiti(graffiti);
 		}
+		populate();
 	}
 	
 	public void setGraffitis(Collection<Graffiti> graffities){
 		_overlays.clear();
 		addGraffities(graffities);
+		populate();
 	}
 	
 	@Override

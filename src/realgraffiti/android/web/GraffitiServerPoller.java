@@ -15,6 +15,8 @@ public class GraffitiServerPoller {
 	private GraffitiPollListener _polllListener;
 	private Collection<Graffiti> _recievedGraffiteis;
 	
+	private GraffitiPoll _graffitiPolltask;
+	
 	public GraffitiServerPoller(RealGraffitiData realGraffitiData, int pollingIntervapl){
 		_realGraffitiData = realGraffitiData;
 		_pollingInterval = pollingIntervapl;
@@ -26,14 +28,21 @@ public class GraffitiServerPoller {
 	}
 	
 	public void beginPolling(){
-		 new GraffitiPoll().execute(_pollingInterval);
+		_graffitiPolltask = new GraffitiPoll();
+		_graffitiPolltask.execute(_pollingInterval);
+	}
+	
+	public void stopPolling(){
+		_graffitiPolltask.cancel(true);
+		_graffitiPolltask = null;
 	}
 	
 	 private class GraffitiPoll extends AsyncTask<Integer, Collection<Graffiti>, Collection<Graffiti>> {
+		 private boolean _running = true;
 		 @Override
 		protected Collection<Graffiti> doInBackground(Integer... params) {
 			 Collection<Graffiti> graffities = null;
-			 while(isCancelled() == false){
+			 while(_running){
 				 GraffitiLocationParameters graffitiLocationParameters = 
 					 GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator().getCurrentLocationParameters();
 				 
@@ -54,6 +63,11 @@ public class GraffitiServerPoller {
 			 
 			return graffities;
 		}
+		 
+		 @Override
+        protected void onCancelled() {
+           _running = false;
+        }
 		 
 	     protected void onProgressUpdate(Collection<Graffiti>... graffities) {
 	         _polllListener.onPollingData(graffities[0]);
