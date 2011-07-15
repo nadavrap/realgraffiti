@@ -42,7 +42,6 @@ public class RealGraffitiDataProxy implements RealGraffitiData{
 		client.execute(RequestMethod.POST);
 		
 		int responseCode = client.getResponseCode();
-		String response = client.getResponse();
 
 		return responseCode == HttpURLConnection.HTTP_OK;
 	}
@@ -56,7 +55,7 @@ public class RealGraffitiDataProxy implements RealGraffitiData{
 		
 		client.execute(RequestMethod.POST);
 		
-		String uploadUrl = client.getResponse();
+		String uploadUrl = client.getResponseString();
 		
 		return serverPath + uploadUrl.trim();
 	}

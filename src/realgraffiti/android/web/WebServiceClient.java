@@ -38,7 +38,8 @@ import com.google.gson.Gson;
 public class WebServiceClient {
 	 
     public enum RequestMethod {
-		POST
+		POST,
+		GET
 	}
 
     private ArrayList <NameValuePair> headers;
@@ -50,7 +51,7 @@ public class WebServiceClient {
     private int responseCode;
     private String message;
  
-    private String response;
+    private InputStream response;
  
     public WebServiceClient(String url)
     {
@@ -60,10 +61,26 @@ public class WebServiceClient {
         files = new HashMap<String, byte[]>();
     }
     
-    public String getResponse() {
-        return response;
+    public String getResponseString() {
+        try {
+			return convertStreamToString(response);
+		} catch (IOException e) {
+			throw new WebServiceClientException("WebServiceClient Error", e);
+		}
     }
  
+    public Object getResponseObject(Type type){
+    	Gson gson = new Gson();
+    	String json = getResponseString().trim();
+    	Object responseObject = gson.fromJson(json, type);
+    	
+    	return responseObject;
+    }
+    
+    public InputStream getResponseInputStream(){
+    	return response;
+    }
+    
     public String getErrorMessage() {
         return message;
     }
@@ -87,23 +104,73 @@ public class WebServiceClient {
     	files.put(name, content);
     }
     
+    
     public void execute(RequestMethod method)
     {
-		HttpPost request = new HttpPost(url);
+		HttpUriRequest request = null;
  		
-		addHeadersToRequest(request);
 		
-		if(files.size() > 0){
-			prepareMultipartPostRequest(request);
+		switch(method){
+		case POST:		
+			request = preparePostRequest(url);
+			break;
+		case GET:
+			request = prepareGetRequest(url);
+			break;
 		}
-		else{
-			preparePostRequest(request);
-		}
+		
+		addHeadersToRequest(request);
 		
 		executeRequest(request, url);
 	}
 
-	private void preparePostRequest(HttpPost request) {
+	private HttpGet prepareGetRequest(String url) {
+        //add parameters
+        String combinedParams = "";
+        if(!params.isEmpty()){
+            combinedParams = createParametersQueryString();
+        }
+        Log.d("realgraffiti", "prepering GET request: " + url + combinedParams);
+        HttpGet request = new HttpGet(url + combinedParams);
+        return request;
+	}
+
+	private String createParametersQueryString(){
+		String combinedParams = "?";
+		for(Entry<String, Object> entry: params.entrySet())
+		{
+		    String paramString;
+			try {
+				paramString = entry.getKey() + "=" + URLEncoder.encode((String)entry.getValue(),"UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				throw new WebServiceClientException("RestClient error", e);
+			}
+		    if(combinedParams.length() > 1)
+		    {
+		        combinedParams  +=  "&" + paramString;
+		    }
+		    else
+		    {
+		        combinedParams += paramString;
+		    }
+		}
+		return combinedParams;
+	}
+
+	private HttpPost preparePostRequest(String url) {
+		HttpPost request = new HttpPost(url);
+		if(files.size() > 0){
+			prepareMultipartPostRequest(request);
+		}
+		else{
+			preparePostRequestWithoutFiles(request);
+		}
+		
+		return request;
+	}
+
+	private void preparePostRequestWithoutFiles(HttpPost request) {
 		// TODO Auto-generated method stub
 		
 		List<BasicNameValuePair> parameters = new ArrayList<BasicNameValuePair>();
@@ -122,11 +189,11 @@ public class WebServiceClient {
 		try {
 			request.setEntity(new UrlEncodedFormEntity(parameters, HTTP.UTF_8));
 		} catch (UnsupportedEncodingException e) {
-			throw new RestClientException("RestClient error", e);
+			throw new WebServiceClientException("RestClient error", e);
 		}
 	}
 
-	private void addHeadersToRequest(HttpPost request) {
+	private void addHeadersToRequest(HttpUriRequest request) {
 		for(NameValuePair h : headers)
 		{
 		    request.addHeader(h.getName(), h.getValue());
@@ -153,7 +220,7 @@ public class WebServiceClient {
 				try {
 					paramValue = new StringBody(json);
 				} catch (UnsupportedEncodingException e) {
-					throw new RestClientException("RestClient Error", e);
+					throw new WebServiceClientException("RestClient Error", e);
 				}
 				httpEntity.addPart(entry.getKey(), paramValue);
 			}
@@ -187,22 +254,19 @@ public class WebServiceClient {
             if (entity != null) {
  
                 InputStream instream = entity.getContent();
-                response = convertStreamToString(instream);
-                Log.d("realgraffiti", "Response content: " + response);
-                // Closing the input stream will trigger connection release
-                instream.close();
+                response = instream;
             }
  
         } catch (ClientProtocolException e)  {
             client.getConnectionManager().shutdown();
-            throw new RestClientException("RestClient error", e);
+            throw new WebServiceClientException("RestClient error", e);
         } catch (IOException e) {
             client.getConnectionManager().shutdown();
-            throw new RestClientException("RestClient error", e);
+            throw new WebServiceClientException("RestClient error", e);
         }
     }
  
-    private static String convertStreamToString(InputStream is) {
+    private static String convertStreamToString(InputStream is) throws IOException {
  
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         StringBuilder sb = new StringBuilder();
@@ -213,32 +277,30 @@ public class WebServiceClient {
                 sb.append(line + "\n");
             }
         } catch (IOException e) {
-            throw new RestClientException("RestClient error", e);
+            throw new WebServiceClientException("RestClient error", e);
         } finally {
             try {
                 is.close();
             } catch (IOException e) {
-            	throw new RestClientException("RestClient error", e);
+            	throw new WebServiceClientException("RestClient error", e);
             }
         }
+
+        // Closing the input stream will trigger connection release
+        is.close();
+        
         return sb.toString();
     }
     
-    public Object getResponseObject(Type type){
-    	Gson gson = new Gson();
-    	String json = getResponse().trim();
-    	Object responseObject = gson.fromJson(json, type);
-    	
-    	return responseObject;
-    }
+
     
     @SuppressWarnings("serial")
-	public static class RestClientException extends RuntimeException{
-    	public RestClientException(String message){
+	public static class WebServiceClientException extends RuntimeException{
+    	public WebServiceClientException(String message){
     		super(message);
     	}
     	
-    	public RestClientException(String message, Throwable innerException){
+    	public WebServiceClientException(String message, Throwable innerException){
     		super(message, innerException);
     	}
     }
