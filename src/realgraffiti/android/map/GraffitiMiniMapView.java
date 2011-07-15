@@ -56,20 +56,7 @@ public class GraffitiMiniMapView extends ViewGroup{
 	    
     	
     }
-
-    private final SensorEventListener mListener = new SensorEventListener() {
-        public void onSensorChanged(SensorEvent event) {
-            Log.d("realgraffiti",
-                    "sensorChanged (" + event.values[0] + ", " + event.values[1] + ", " + event.values[2] + ")");
-            mValues = event.values;
-
-            invalidate();
-        }
-
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        }
-    };
-    
+   
     @Override
     protected void dispatchDraw(Canvas canvas) {
     	
@@ -90,7 +77,6 @@ public class GraffitiMiniMapView extends ViewGroup{
     	canvas.drawBitmap(mDstB, 0, 0, paint);
     	
     	paint.setXfermode(null);
-        
     }
     
     private Bitmap makeDst(int w, int h) {
