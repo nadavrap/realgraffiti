@@ -22,7 +22,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class Test extends Activity {
+public class ApplicationDemo extends Activity {
 	private RealGraffitiData _graffitiData;
 	
     /** Called when the activity is first created. */
@@ -61,7 +61,7 @@ public class Test extends Activity {
 		        GraffitiLocationParameters graffitiLocationParameters = new GraffitiLocationParameters(new Coordinates(123, 5433), 34, null);
 				Collection<Graffiti> graffiities = _graffitiData.getNearByGraffiti(graffitiLocationParameters);
 				ListView listView = (ListView)findViewById(R.id.listView1);
-				listView.setAdapter(new ArrayAdapter<Graffiti>(Test.this, android.R.layout.test_list_item, (List<Graffiti>)graffiities ));
+				listView.setAdapter(new ArrayAdapter<Graffiti>(ApplicationDemo.this, android.R.layout.test_list_item, (List<Graffiti>)graffiities ));
 			}
 		});
         

@@ -1,4 +1,4 @@
-package realgraffiti.android.activities;
+package realgraffiti.android.map;
 
 import javax.microedition.khronos.opengles.GL;
 

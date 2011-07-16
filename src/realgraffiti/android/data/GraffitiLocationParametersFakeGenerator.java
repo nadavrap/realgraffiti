@@ -17,11 +17,13 @@ public class GraffitiLocationParametersFakeGenerator implements
 			siftDescriptors.add(Math.random());
 		}
 		
-		int latitudeFrom = 28;
-		int latitudeTo = 32;
 		
-		int longtitudeFrom = 33;
-		int longtitudeTo = 36;
+		
+		double latitudeFrom = 48.645;
+		double latitudeTo = 48.655;
+		
+		double longtitudeFrom = 2.345;
+		double longtitudeTo = 2.355;
 		
 		int latitude = (int) ((Math.random()*(latitudeTo - latitudeFrom) + latitudeFrom)*1000000);
 		int longtitude = (int) ((Math.random()*(longtitudeTo - longtitudeFrom) + longtitudeFrom)*1000000);

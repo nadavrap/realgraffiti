@@ -15,15 +15,16 @@ import com.google.android.maps.OverlayItem;
 
 public class CurrentLocationOverlay extends ItemizedOverlay<OverlayItem>{
 	protected static final double E6 = 1000000;
-	MapView _mapView;
-	OverlayItem _currentLocationOverlayItem = null;
-	LocationManager _locationManager;
+	private MapView _mapView;
+	private OverlayItem _currentLocationOverlayItem = null;
+	private LocationManager _locationManager;
+	private final int ZOOM_LEVEL = 15; 
 	public CurrentLocationOverlay(Drawable defaultMarker, MapView mapView, LocationManager locationManager) {
-		 super(boundCenterBottom(defaultMarker));
+		 super(boundCenter(defaultMarker));
 		 
 		 _mapView = mapView;
 		 _locationManager = locationManager;
-		 
+		 populate();
 	}
 	
 	public void setCurrentLocation(GeoPoint currentLocation){
@@ -64,10 +65,8 @@ public class CurrentLocationOverlay extends ItemizedOverlay<OverlayItem>{
 		      Log.d("realgraffiti", "location recieved");
 		      setCurrentLocation(currentLocation);
 		      
-		      MapController mc = _mapView.getController();
-		      mc.animateTo(currentLocation);
-		      //mc.setCenter(point)
-		      mc.setZoom(10);
+		      MapController mapController = _mapView.getController();
+		      mapController.animateTo(currentLocation);
 		    }
 
 			@Override

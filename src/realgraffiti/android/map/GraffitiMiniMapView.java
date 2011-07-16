@@ -16,23 +16,31 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.LocationManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.MeasureSpec;
-import realgraffiti.android.activities.SmoothCanvas;
+import realgraffiti.android.R;
+import realgraffiti.android.data.GraffitiLocationParametersGeneratorFactory;
+import realgraffiti.android.data.RealGraffitiLocalData;
+import realgraffiti.common.data.RealGraffitiData;
+import realgraffiti.common.dataObjects.Graffiti;
+import realgraffiti.common.dataObjects.GraffitiLocationParameters;
 
 public class GraffitiMiniMapView extends ViewGroup{
 	private SensorManager _sensorManager;
     private Sensor _sensor;
 	private static final float SQ2 = 1.414213562373095f;
 	private static final String MAP_KEY = "0OUnpM96lLtw7orPft9tQGYGiIuhVDDEJmmQjHg";
+	private static final int ZOOM_LEVEL = 15;
     private final SmoothCanvas _canvas = new SmoothCanvas();
     private float _heading = 45;
     private MapView _mapView;
@@ -53,25 +61,40 @@ public class GraffitiMiniMapView extends ViewGroup{
 	    _mapView.setEnabled(true);
 	    addView(_mapView);
 	    
+	    _mapView.setBuiltInZoomControls(true);
+	    _mapView.setSatellite(true);
+	    _mapView.getController().setZoom(ZOOM_LEVEL);
+	    Drawable graffitiMarker = this.getResources().getDrawable(R.drawable.spraycan);
+	    RealGraffitiData realGraffitiData = new RealGraffitiLocalData();
+	    GraffitiesLocationsOverlay graffitiOverlay = new GraffitiesLocationsOverlay(graffitiMarker, _mapView, realGraffitiData);
+	    _mapView.getOverlays().add(graffitiOverlay);
 	    
+	    graffitiOverlay.startPollingForGraffities();
+	    
+	    Drawable currentLocationMarker = this.getResources().getDrawable(R.drawable.current_location);
+	    LocationManager locationManager = (LocationManager) context.getSystemService(context.LOCATION_SERVICE);
+	    CurrentLocationOverlay currentLocationOverLay = new CurrentLocationOverlay(currentLocationMarker, _mapView,locationManager);
+	    _mapView.getOverlays().add(currentLocationOverLay);
+	    
+	    currentLocationOverLay.startTrackingLocation();
+		
+	    GraffitiLocationParameters glp = GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator().getCurrentLocationParameters();
+	    Graffiti graffiti = new Graffiti(glp);
+	    realGraffitiData.addNewGraffiti(graffiti);
     	
     }
    
     @Override
-    protected void dispatchDraw(Canvas canvas) {
-    	
+    protected void dispatchDraw(Canvas canvas) {   	
         canvas.save(Canvas.MATRIX_SAVE_FLAG);
-        
-       // _heading = SensorManager.getOrientation(R, values);
-        
-        canvas.rotate(-_heading, getWidth() * 0.5f, getHeight() * 0.5f);
+        //canvas.rotate(-_heading, getWidth() * 0.5f, getHeight() * 0.5f);
         //_canvas.setDelegate(canvas);
         super.dispatchDraw(canvas);
         canvas.restore();
         
         int W = getWidth();
         int H = getHeight();
-        Bitmap mDstB = makeDst(W, H);
+        Bitmap mDstB = createCircleFrame(W, H);
         Paint paint = new Paint();
     	paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
     	canvas.drawBitmap(mDstB, 0, 0, paint);
@@ -79,13 +102,13 @@ public class GraffitiMiniMapView extends ViewGroup{
     	paint.setXfermode(null);
     }
     
-    private Bitmap makeDst(int w, int h) {
+    private Bitmap createCircleFrame(int w, int h) {
         Bitmap bm = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         Canvas c = new Canvas(bm);
         Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
 
         p.setColor(0xFFFFCC44);
-        c.drawOval(new RectF(0, 0, w*3/4, h*3/4), p);
+        c.drawOval(new RectF(0, 0, w, h), p);
         return bm;
     }
     

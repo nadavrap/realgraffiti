@@ -23,8 +23,7 @@ import com.google.android.maps.MyLocationOverlay;
 public class GraffitisLocationsMap extends MapActivity {
 
 	private GraffitiServerPoller _graffitiServerPoller = null;
-	private static final String MAP_KEY = "0OUnpM96lLtw7orPft9tQGYGiIuhVDDEJmmQjHg";
-	
+	private final int ZOOM_LEVEL = 13;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
@@ -33,6 +32,7 @@ public class GraffitisLocationsMap extends MapActivity {
 	    MapView mapView = (MapView)findViewById(R.id.mapview);
 	    mapView.setBuiltInZoomControls(true);
 	    mapView.setSatellite(true);
+	    mapView.getController().setZoom(ZOOM_LEVEL);
 	    Drawable graffitiMarker = this.getResources().getDrawable(R.drawable.spraycan);
 	    RealGraffitiData realGraffitiData = new RealGraffitiLocalData();
 	    GraffitiesLocationsOverlay graffitiOverlay = new GraffitiesLocationsOverlay(graffitiMarker, mapView, realGraffitiData);
