@@ -8,6 +8,7 @@ import realgraffiti.common.dataObjects.GraffitiLocationParameters;
 import realgraffiti.android.data.*;
 import realgraffiti.android.map.GraffitiesLocationsOverlay;
 import realgraffiti.android.map.GraffitiMapView;
+import realgraffiti.android.map.CurrentLocationOverlay;
 import realgraffiti.android.web.GraffitiServerPoller;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -38,41 +39,21 @@ public class GraffitisLocationsMap extends MapActivity {
 	    
 	    graffitiOverlay.startPollingForGraffities();
 	    
+	    Drawable currentLocationMarker = this.getResources().getDrawable(R.drawable.current_location);
+	    CurrentLocationOverlay currentLocationOverLay = new CurrentLocationOverlay(currentLocationMarker, mapView);
+	    mapView.getOverlays().add(currentLocationOverLay);
 	    
-	    MyLocationOverlay myLocOverlay;
-	     
-	    myLocOverlay = new MyLocationOverlay(this, mapView);
-		myLocOverlay.enableMyLocation();
-
-		mapView.getOverlays().add(myLocOverlay);
-		
 	    /*
+	    MyLocationOverlay myLocationOverlay;     
+	    myLocationOverlay = new MyLocationOverlay(this, mapView);
+		myLocationOverlay.enableMyLocation();
+
+		mapView.getOverlays().add(myLocationOverlay);
+		*/
 	    
-	    MapView mapView = new MapView(this, MAP_KEY);
-	    mapView.setEnabled(true);
-	    mapView.setBuiltInZoomControls(true);
-	    mapView.setClickable(true);
-	    mapView.setSatellite(true);
-	    mapView.setTraffic(true);
-	    mapView.setStreetView(true);   
-	    
-	    MyLocationOverlay myLocOverlay;
-	     
-	    myLocOverlay = new MyLocationOverlay(this, mapView);
-		myLocOverlay.enableMyLocation();
-			
-		mapView.getOverlays().add(myLocOverlay);
-	    
-	    GraffitiMapView graffitiMapView = new GraffitiMapView(this, mapView, realGraffitiData);
-	    
-	    graffitiMapView.startPollingForGraffities();
-	    
-	    
-	    LinearLayout layout = (LinearLayout) findViewById(R.id.graffitiMapViewLayout);
-	    
-	    layout.addView(graffitiMapView);
-	     */
-	    
+		
+		
+		
 	    GraffitiLocationParameters glp = GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator().getCurrentLocationParameters();
 	    Graffiti graffiti = new Graffiti(glp);
 	    realGraffitiData.addNewGraffiti(graffiti);
