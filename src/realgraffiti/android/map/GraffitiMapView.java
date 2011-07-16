@@ -35,35 +35,5 @@ public class GraffitiMapView extends LinearLayout  {
 	    _realGraffitiData = realGraffitiData;
 	}
 	
-	public void startPollingForGraffities(){
-		if(_graffitiServerPoller == null){
-			initializeGraffitiServerPoller();
-		}
-		
-		_graffitiServerPoller.beginPolling();
-	}
 	
-	public void stopPollingForGraffities(){
-		_graffitiServerPoller.stopPolling();
-	}
-
-	private void initializeGraffitiServerPoller() {
-	    _graffitiServerPoller = new GraffitiServerPoller(_realGraffitiData, DATA_POLLING_INTERVAL);
-	    
-	    Drawable drawable = this.getResources().getDrawable(R.drawable.spraycan);
-	    final GraffitiItemizedOverlay itemizedoverlay = new GraffitiItemizedOverlay(drawable);
-	    
-	    _graffitiServerPoller.setOnPoll(new GraffitiPollListener() {
-			@Override
-			public void onPollingData(Collection<Graffiti> graffities) {
-				if(graffities != null && graffities.size() > 0){
-					List<Overlay> mapOverlays = _mapView.getOverlays();
-					itemizedoverlay.addGraffities(graffities);
-				    mapOverlays.add(itemizedoverlay);
-				    _mapView.invalidate();
-				}
-				Log.d("realgraffiti", "poll data of size: " + graffities.size());
-			}
-		});
-	}
 }

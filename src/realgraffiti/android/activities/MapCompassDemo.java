@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package realgraffiti.android;
+package realgraffiti.android.activities;
 
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;

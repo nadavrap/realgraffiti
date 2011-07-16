@@ -1,9 +1,10 @@
-package realgraffiti.android;
+package realgraffiti.android.activities;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import realgraffiti.android.R;
 import realgraffiti.android.data.RealGraffitiLocalData;
 import realgraffiti.android.web.RealGraffitiDataProxy;
 import realgraffiti.common.data.RealGraffitiData;

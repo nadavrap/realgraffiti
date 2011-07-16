@@ -26,7 +26,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.MeasureSpec;
-import realgraffiti.android.SmoothCanvas;
+import realgraffiti.android.activities.SmoothCanvas;
 
 public class GraffitiMiniMapView extends ViewGroup{
 	private SensorManager _sensorManager;

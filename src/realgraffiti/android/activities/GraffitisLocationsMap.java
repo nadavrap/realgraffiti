@@ -1,40 +1,25 @@
-package realgraffiti.android.map;
-
-import java.util.Collection;
-import java.util.List;
+package realgraffiti.android.activities;
 
 import realgraffiti.android.R;
 import realgraffiti.android.data.GraffitiLocationParametersGeneratorFactory;
 import realgraffiti.common.data.RealGraffitiData;
 import realgraffiti.common.dataObjects.Graffiti;
 import realgraffiti.common.dataObjects.GraffitiLocationParameters;
-
 import realgraffiti.android.data.*;
+import realgraffiti.android.map.GraffitiesLocationsOverlay;
+import realgraffiti.android.map.GraffitiMapView;
 import realgraffiti.android.web.GraffitiServerPoller;
-import realgraffiti.android.web.GraffitiPollListener;
-
-import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.LinearLayout;
-
-
 import com.google.android.maps.MapActivity;
-import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
-import com.google.android.maps.Overlay;
+
 
 
 public class GraffitisLocationsMap extends MapActivity {
-	private final int DATA_POLLING_INTERVAL = 10000;
+
 	private GraffitiServerPoller _graffitiServerPoller = null;
 	private static final String MAP_KEY = "0OUnpM96lLtw7orPft9tQGYGiIuhVDDEJmmQjHg";
 	
@@ -43,7 +28,26 @@ public class GraffitisLocationsMap extends MapActivity {
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.mapview);
 	    
+	    MapView mapView = (MapView)findViewById(R.id.mapview);
+	    mapView.setBuiltInZoomControls(true);
+	    
+	    Drawable graffitiMarker = this.getResources().getDrawable(R.drawable.spraycan);
 	    RealGraffitiData realGraffitiData = new RealGraffitiLocalData();
+	    GraffitiesLocationsOverlay graffitiOverlay = new GraffitiesLocationsOverlay(graffitiMarker, mapView, realGraffitiData);
+	    mapView.getOverlays().add(graffitiOverlay);
+	    
+	    graffitiOverlay.startPollingForGraffities();
+	    
+	    
+	    MyLocationOverlay myLocOverlay;
+	     
+	    myLocOverlay = new MyLocationOverlay(this, mapView);
+		myLocOverlay.enableMyLocation();
+
+		mapView.getOverlays().add(myLocOverlay);
+		
+	    /*
+	    
 	    MapView mapView = new MapView(this, MAP_KEY);
 	    mapView.setEnabled(true);
 	    mapView.setBuiltInZoomControls(true);
@@ -52,13 +56,22 @@ public class GraffitisLocationsMap extends MapActivity {
 	    mapView.setTraffic(true);
 	    mapView.setStreetView(true);   
 	    
+	    MyLocationOverlay myLocOverlay;
+	     
+	    myLocOverlay = new MyLocationOverlay(this, mapView);
+		myLocOverlay.enableMyLocation();
+			
+		mapView.getOverlays().add(myLocOverlay);
 	    
 	    GraffitiMapView graffitiMapView = new GraffitiMapView(this, mapView, realGraffitiData);
 	    
 	    graffitiMapView.startPollingForGraffities();
+	    
+	    
 	    LinearLayout layout = (LinearLayout) findViewById(R.id.graffitiMapViewLayout);
 	    
 	    layout.addView(graffitiMapView);
+	     */
 	    
 	    GraffitiLocationParameters glp = GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator().getCurrentLocationParameters();
 	    Graffiti graffiti = new Graffiti(glp);

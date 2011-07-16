@@ -1,9 +1,10 @@
-package realgraffiti.android;
+package realgraffiti.android.activities;
 
 import java.io.InputStream;
 
 import com.google.android.maps.MapActivity;
 
+import realgraffiti.android.R;
 import realgraffiti.android.web.WebServiceClient;
 import realgraffiti.android.web.WebServiceClient.RequestMethod;
 import android.app.Activity;

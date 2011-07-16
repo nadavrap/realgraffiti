@@ -8,28 +8,28 @@
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> 
     <application android:icon="@drawable/icon" android:label="@string/mapview_name">
     	<uses-library android:name="com.google.android.maps" />
-        <activity android:name=".Test"
+        <activity android:name=".activities.Test"
                   android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MapCompassDemo"
+        <activity android:name=".activities.MapCompassDemo"
                   android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-         <activity android:name=".map.GraffitisLocationsMap"
+         <activity android:name=".activities.GraffitisLocationsMap"
                   android:label="@string/mapview_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-		<activity android:name=".RadarMapTest"
+		<activity android:name=".activities.RadarMapTest"
                   android:label="radar map test">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
