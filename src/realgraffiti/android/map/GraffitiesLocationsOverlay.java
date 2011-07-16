@@ -34,6 +34,7 @@ public class GraffitiesLocationsOverlay extends ItemizedOverlay<OverlayItem> {
 		  
 		  _realGraffitiData = realGraffitiData;
 		  _mapView = mapView;
+		  populate();
 	}
 	
 	public void addGraffiti(Graffiti graffiti){

@@ -33,6 +33,7 @@ public class GraffitisLocationsMap extends MapActivity {
 	    mapView.setBuiltInZoomControls(true);
 	    mapView.setSatellite(true);
 	    mapView.getController().setZoom(ZOOM_LEVEL);
+	    
 	    Drawable graffitiMarker = this.getResources().getDrawable(R.drawable.spraycan);
 	    RealGraffitiData realGraffitiData = new RealGraffitiLocalData();
 	    GraffitiesLocationsOverlay graffitiOverlay = new GraffitiesLocationsOverlay(graffitiMarker, mapView, realGraffitiData);
@@ -46,22 +47,6 @@ public class GraffitisLocationsMap extends MapActivity {
 	    mapView.getOverlays().add(currentLocationOverLay);
 	    
 	    currentLocationOverLay.startTrackingLocation();
-		
-	    GraffitiLocationParameters glp = GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator().getCurrentLocationParameters();
-	    Graffiti graffiti = new Graffiti(glp);
-	    realGraffitiData.addNewGraffiti(graffiti);
-	    
-	    glp = GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator().getCurrentLocationParameters();
-	    graffiti = new Graffiti(glp);
-	    realGraffitiData.addNewGraffiti(graffiti);
-	    
-	    glp = GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator().getCurrentLocationParameters();
-	    graffiti = new Graffiti(glp);
-	    realGraffitiData.addNewGraffiti(graffiti);
-	    
-	    glp = GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator().getCurrentLocationParameters();
-	    graffiti = new Graffiti(glp);
-	    realGraffitiData.addNewGraffiti(graffiti);
 	}
 	
 	@Override

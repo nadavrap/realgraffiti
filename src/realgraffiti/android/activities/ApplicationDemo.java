@@ -4,13 +4,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.google.android.maps.MapActivity;
+
 import realgraffiti.android.R;
+import realgraffiti.android.data.GraffitiLocationParametersGeneratorFactory;
 import realgraffiti.android.data.RealGraffitiLocalData;
+import realgraffiti.android.map.GraffitiMiniMapView;
 import realgraffiti.android.web.RealGraffitiDataProxy;
 import realgraffiti.common.data.RealGraffitiData;
 import realgraffiti.common.dataObjects.*;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,39 +27,41 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class ApplicationDemo extends Activity {
+public class ApplicationDemo extends MapActivity {
 	private RealGraffitiData _graffitiData;
 	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        _graffitiData = new RealGraffitiDataProxy(getApplicationContext());
-        setContentView(R.layout.main);
+        _graffitiData = new RealGraffitiLocalData();
+        setContentView(R.layout.application_demo);
         
-        Button button = (Button)findViewById(R.id.button1);
-        button.setOnClickListener(new OnClickListener() {
-		@Override
+        
+        GraffitiMiniMapView miniMapView = (GraffitiMiniMapView)findViewById(R.id.demo_mini_map);
+        miniMapView.setRealGraffitiData(_graffitiData);
+        miniMapView.setOnClickListener(new OnClickListener() {
+			
+			@Override
 			public void onClick(View v) {
-
-				Coordinates coordinates = new Coordinates(123, 5433);
-				double angle = 30;
-				List<Double> siftDisc = new ArrayList<Double>();
-				siftDisc.add(1.1);
-				siftDisc.add(3.1);
-				GraffitiLocationParameters glp = new GraffitiLocationParameters(coordinates, angle, siftDisc);
+				openFullMapView();
 				
-				byte[] imageData = new byte[]{1,2,3,4};
-				Graffiti g = new Graffiti(glp);
-				g.set_imageData(imageData);
-				
-				_graffitiData.addNewGraffiti(g);
 			}
 		});
         
-        
-        
-        button = (Button)findViewById(R.id.getButton);
+		setAddNewGraffitiButton();       
+        setGetNearByGraffitiButton();
+    }
+
+	protected void openFullMapView() {
+		// 
+		Intent intent = new Intent();
+		intent.setClass(this, GraffitisLocationsMap.class);
+		startActivity(intent);
+	}
+
+	private void setGetNearByGraffitiButton() {
+		Button button = (Button)findViewById(R.id.getButton);
         button.setOnClickListener(new OnClickListener() {
 		
 			public void onClick(View v) {
@@ -64,18 +71,29 @@ public class ApplicationDemo extends Activity {
 				listView.setAdapter(new ArrayAdapter<Graffiti>(ApplicationDemo.this, android.R.layout.test_list_item, (List<Graffiti>)graffiities ));
 			}
 		});
-        
-        ListView listView = (ListView)findViewById(R.id.listView1);
-        listView.setOnItemClickListener(new OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view,
-                    int position, long id) {           	
-        		ArrayAdapter<Graffiti> adapter = (ArrayAdapter<Graffiti>)parent.getAdapter();
-        		Graffiti clickedGraffiti = adapter.getItem(position);
-        		
-        		byte[] imageData = _graffitiData.getGraffitiImage(clickedGraffiti.getKey());
-        		Log.d("realgraffiti", "clicked graffiti: " + imageData.toString());
-            }
-        });
+	}
 
-    }
+	private void setAddNewGraffitiButton() {
+		Button button = (Button)findViewById(R.id.add_new_graffiti_button);
+        button.setOnClickListener(new OnClickListener() {
+		@Override
+			public void onClick(View v) {
+				GraffitiLocationParameters glp = GraffitiLocationParametersGeneratorFactory.
+					getGaffitiLocationParametersGenerator().
+					getCurrentLocationParameters();
+				
+				byte[] imageData = new byte[]{1,2,3,4};
+				Graffiti g = new Graffiti(glp);
+				g.set_imageData(imageData);
+				
+				_graffitiData.addNewGraffiti(g);
+			}
+		});
+	}
+
+	@Override
+	protected boolean isRouteDisplayed() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

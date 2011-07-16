@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+	<TextView android:id="@+id/text1" android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:text="@string/hello" />
+	<Button android:text="Add new graffiti" android:id="@+id/add_new_graffiti_button"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
+	<Button android:text="Get near by graffiti" android:id="@+id/getButton"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
+	<ListView android:layout_height="wrap_content"
+		android:layout_width="match_parent" android:id="@+id/listView1"></ListView>
+	
+	<realgraffiti.android.map.GraffitiMiniMapView android:layout_alignParentLeft="true"
+			class=""
+			android:layout_height="150px"
+			android:layout_width="150px" 
+			android:id="@+id/demo_mini_map"
+			/>
+
+</LinearLayout>

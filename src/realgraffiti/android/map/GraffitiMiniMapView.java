@@ -45,7 +45,7 @@ public class GraffitiMiniMapView extends ViewGroup{
     private float _heading = 45;
     private MapView _mapView;
     private float[] mValues;
-    
+    private RealGraffitiData _realGraffitiData;
 	public GraffitiMiniMapView(Context context) {
 		super(context);
 		initView(context);	    
@@ -64,26 +64,25 @@ public class GraffitiMiniMapView extends ViewGroup{
 	    _mapView.setBuiltInZoomControls(true);
 	    _mapView.setSatellite(true);
 	    _mapView.getController().setZoom(ZOOM_LEVEL);
-	    Drawable graffitiMarker = this.getResources().getDrawable(R.drawable.spraycan);
-	    RealGraffitiData realGraffitiData = new RealGraffitiLocalData();
-	    GraffitiesLocationsOverlay graffitiOverlay = new GraffitiesLocationsOverlay(graffitiMarker, _mapView, realGraffitiData);
-	    _mapView.getOverlays().add(graffitiOverlay);
-	    
-	    graffitiOverlay.startPollingForGraffities();
 	    
 	    Drawable currentLocationMarker = this.getResources().getDrawable(R.drawable.current_location);
 	    LocationManager locationManager = (LocationManager) context.getSystemService(context.LOCATION_SERVICE);
 	    CurrentLocationOverlay currentLocationOverLay = new CurrentLocationOverlay(currentLocationMarker, _mapView,locationManager);
 	    _mapView.getOverlays().add(currentLocationOverLay);
 	    
-	    currentLocationOverLay.startTrackingLocation();
-		
-	    GraffitiLocationParameters glp = GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator().getCurrentLocationParameters();
-	    Graffiti graffiti = new Graffiti(glp);
-	    realGraffitiData.addNewGraffiti(graffiti);
-    	
+	    currentLocationOverLay.startTrackingLocation();   	
     }
    
+    public void setRealGraffitiData(RealGraffitiData realGraffitiData){
+    	_realGraffitiData = realGraffitiData;
+    	
+    	Drawable graffitiMarker = this.getResources().getDrawable(R.drawable.graffiti_mark);
+    	GraffitiesLocationsOverlay graffitiOverlay = new GraffitiesLocationsOverlay(graffitiMarker, _mapView, _realGraffitiData);
+	    _mapView.getOverlays().add(graffitiOverlay);
+	    
+	    graffitiOverlay.startPollingForGraffities();
+    }
+    
     @Override
     protected void dispatchDraw(Canvas canvas) {   	
         canvas.save(Canvas.MATRIX_SAVE_FLAG);
