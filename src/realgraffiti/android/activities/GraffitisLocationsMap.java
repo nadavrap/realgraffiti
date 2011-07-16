@@ -11,6 +11,7 @@ import realgraffiti.android.map.GraffitiMapView;
 import realgraffiti.android.map.CurrentLocationOverlay;
 import realgraffiti.android.web.GraffitiServerPoller;
 import android.graphics.drawable.Drawable;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.widget.LinearLayout;
 import com.google.android.maps.MapActivity;
@@ -31,7 +32,7 @@ public class GraffitisLocationsMap extends MapActivity {
 	    
 	    MapView mapView = (MapView)findViewById(R.id.mapview);
 	    mapView.setBuiltInZoomControls(true);
-	    
+	    mapView.setSatellite(true);
 	    Drawable graffitiMarker = this.getResources().getDrawable(R.drawable.spraycan);
 	    RealGraffitiData realGraffitiData = new RealGraffitiLocalData();
 	    GraffitiesLocationsOverlay graffitiOverlay = new GraffitiesLocationsOverlay(graffitiMarker, mapView, realGraffitiData);
@@ -40,19 +41,11 @@ public class GraffitisLocationsMap extends MapActivity {
 	    graffitiOverlay.startPollingForGraffities();
 	    
 	    Drawable currentLocationMarker = this.getResources().getDrawable(R.drawable.current_location);
-	    CurrentLocationOverlay currentLocationOverLay = new CurrentLocationOverlay(currentLocationMarker, mapView);
+	    LocationManager locationManager = (LocationManager) this.getSystemService(this.LOCATION_SERVICE);
+	    CurrentLocationOverlay currentLocationOverLay = new CurrentLocationOverlay(currentLocationMarker, mapView,locationManager);
 	    mapView.getOverlays().add(currentLocationOverLay);
 	    
-	    /*
-	    MyLocationOverlay myLocationOverlay;     
-	    myLocationOverlay = new MyLocationOverlay(this, mapView);
-		myLocationOverlay.enableMyLocation();
-
-		mapView.getOverlays().add(myLocationOverlay);
-		*/
-	    
-		
-		
+	    currentLocationOverLay.startTrackingLocation();
 		
 	    GraffitiLocationParameters glp = GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator().getCurrentLocationParameters();
 	    Graffiti graffiti = new Graffiti(glp);
