@@ -11,7 +11,7 @@
 	<ListView android:layout_height="wrap_content"
 		android:layout_width="match_parent" android:id="@+id/listView1"></ListView>
 	
-	<realgraffiti.android.map.GraffitiMiniMapView android:layout_alignParentLeft="true"
+	<realgraffiti.android.osmdroid.GraffitiMiniMapView android:layout_alignParentLeft="true"
 			class=""
 			android:layout_height="150px"
 			android:layout_width="150px" 

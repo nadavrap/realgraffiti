@@ -9,23 +9,21 @@ import com.google.android.maps.MapActivity;
 import realgraffiti.android.R;
 import realgraffiti.android.data.GraffitiLocationParametersGeneratorFactory;
 import realgraffiti.android.data.RealGraffitiLocalData;
-import realgraffiti.android.map.GraffitiMiniMapView;
+import realgraffiti.android.osmdroid.GraffitiMiniMapView;
 import realgraffiti.android.web.RealGraffitiDataProxy;
 import realgraffiti.common.data.RealGraffitiData;
 import realgraffiti.common.dataObjects.*;
-import android.app.Activity;
-import android.content.Context;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
+
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
+
 
 public class ApplicationDemo extends MapActivity {
 	private RealGraffitiData _graffitiData;
@@ -45,6 +43,7 @@ public class ApplicationDemo extends MapActivity {
 			@Override
 			public void onClick(View v) {
 				openFullMapView();
+				Log.d("realgraffiti", "minimap click");
 				
 			}
 		});

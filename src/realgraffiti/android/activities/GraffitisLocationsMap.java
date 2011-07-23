@@ -1,26 +1,29 @@
 package realgraffiti.android.activities;
 
+import org.osmdroid.views.MapView;
+
 import realgraffiti.android.R;
 import realgraffiti.android.data.GraffitiLocationParametersGeneratorFactory;
 import realgraffiti.common.data.RealGraffitiData;
 import realgraffiti.common.dataObjects.Graffiti;
 import realgraffiti.common.dataObjects.GraffitiLocationParameters;
 import realgraffiti.android.data.*;
-import realgraffiti.android.map.GraffitiesLocationsOverlay;
-import realgraffiti.android.map.GraffitiMapView;
-import realgraffiti.android.map.CurrentLocationOverlay;
+import realgraffiti.android.osmdroid.CurrentLocationOverlay;
+import realgraffiti.android.osmdroid.GraffitiesLocationsOverlay;
 import realgraffiti.android.web.GraffitiServerPoller;
+import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.widget.LinearLayout;
+
+/*
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
+*/
 
-
-
-public class GraffitisLocationsMap extends MapActivity {
+public class GraffitisLocationsMap extends Activity {
 
 	private GraffitiServerPoller _graffitiServerPoller = null;
 	private final int ZOOM_LEVEL = 13;
@@ -31,7 +34,7 @@ public class GraffitisLocationsMap extends MapActivity {
 	    
 	    MapView mapView = (MapView)findViewById(R.id.mapview);
 	    mapView.setBuiltInZoomControls(true);
-	    mapView.setSatellite(true);
+	    //mapView.setSatellite(true);
 	    mapView.getController().setZoom(ZOOM_LEVEL);
 	    
 	    Drawable graffitiMarker = this.getResources().getDrawable(R.drawable.spraycan);
@@ -49,7 +52,6 @@ public class GraffitisLocationsMap extends MapActivity {
 	    currentLocationOverLay.startTrackingLocation();
 	}
 	
-	@Override
 	protected boolean isRouteDisplayed() {
 		// TODO Auto-generated method stub
 		return false;
