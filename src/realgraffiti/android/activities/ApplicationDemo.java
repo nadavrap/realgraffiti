@@ -9,7 +9,7 @@ import com.google.android.maps.MapActivity;
 import realgraffiti.android.R;
 import realgraffiti.android.data.GraffitiLocationParametersGeneratorFactory;
 import realgraffiti.android.data.RealGraffitiLocalData;
-import realgraffiti.android.osmdroid.GraffitiMiniMapView;
+import realgraffiti.android.maps.GraffitiMiniMapView;
 import realgraffiti.android.web.RealGraffitiDataProxy;
 import realgraffiti.common.data.RealGraffitiData;
 import realgraffiti.common.dataObjects.*;
@@ -33,32 +33,29 @@ public class ApplicationDemo extends MapActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         _graffitiData = new RealGraffitiLocalData();
-        setContentView(R.layout.application_demo);
-        
+        setContentView(R.layout.application_demo);       
         
         GraffitiMiniMapView miniMapView = (GraffitiMiniMapView)findViewById(R.id.demo_mini_map);
         miniMapView.setRealGraffitiData(_graffitiData);
-        miniMapView.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				openFullMapView();
-				Log.d("realgraffiti", "minimap click");
-				
-			}
-		});
         
 		setAddNewGraffitiButton();       
         setGetNearByGraffitiButton();
     }
 
-	protected void openFullMapView() {
-		// 
-		Intent intent = new Intent();
-		intent.setClass(this, GraffitisLocationsMap.class);
-		startActivity(intent);
-	}
+    @Override
+    protected void onPause() {
+        super.onPause();
 
+        GraffitiMiniMapView miniMapView = (GraffitiMiniMapView)findViewById(R.id.demo_mini_map);
+        miniMapView.stopOverlays();
+    }
+    
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // The activity has become visible (it is now "resumed").
+    }
+    
 	private void setGetNearByGraffitiButton() {
 		Button button = (Button)findViewById(R.id.getButton);
         button.setOnClickListener(new OnClickListener() {

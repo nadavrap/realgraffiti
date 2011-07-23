@@ -1,4 +1,4 @@
-package realgraffiti.android.osmdroid;
+package realgraffiti.android.maps;
 
 import java.util.ArrayList;
 import java.util.Collection;

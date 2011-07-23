@@ -4,7 +4,7 @@
  * http://code.google.com/p/mapsadroidproject/source/browse/trunk/MapsDemo/src/com/example/android/apis/view/MapViewCompassDemo.java?spec=svn3&r=3
  */
 
-package realgraffiti.android.osmdroid;
+package realgraffiti.android.maps;
 
 
 import org.osmdroid.views.MapView;
@@ -32,6 +32,9 @@ public class GraffitiMiniMapView extends ViewGroup{
 	private static final int ZOOM_LEVEL = 16;
     private MapView _mapView;
     private RealGraffitiData _realGraffitiData;
+    
+    private CurrentLocationOverlay _currentLocationOverlay;
+    private GraffitiesLocationsOverlay _graffitiesLocationOverlay;
     
 	public GraffitiMiniMapView(Context context) {
 		super(context);
@@ -64,21 +67,26 @@ public class GraffitiMiniMapView extends ViewGroup{
 	        
 	    Drawable currentLocationMarker = this.getResources().getDrawable(R.drawable.current_location);
 	    LocationManager locationManager = (LocationManager) context.getSystemService(context.LOCATION_SERVICE);
-	    CurrentLocationOverlay currentLocationOverLay = new CurrentLocationOverlay(currentLocationMarker, _mapView,locationManager);
-	    _mapView.getOverlays().add(currentLocationOverLay);
+	    _currentLocationOverlay = new CurrentLocationOverlay(currentLocationMarker, _mapView,locationManager);
+	    _mapView.getOverlays().add(_currentLocationOverlay);
 	    
-	    currentLocationOverLay.startTrackingLocation();   	
+	    _currentLocationOverlay.startTrackingLocation();
     }
    
     public void setRealGraffitiData(RealGraffitiData realGraffitiData){
     	_realGraffitiData = realGraffitiData;
     	
     	Drawable graffitiMarker = this.getResources().getDrawable(R.drawable.graffiti_mark);
-    	GraffitiesLocationsOverlay graffitiOverlay = new GraffitiesLocationsOverlay(graffitiMarker, _mapView, _realGraffitiData);
-	    _mapView.getOverlays().add(graffitiOverlay);
+    	_graffitiesLocationOverlay = new GraffitiesLocationsOverlay(graffitiMarker, _mapView, _realGraffitiData);
+	    _mapView.getOverlays().add(_graffitiesLocationOverlay);
 	    
-	    graffitiOverlay.startPollingForGraffities();
+	    _graffitiesLocationOverlay.startPollingForGraffities();
     }
+    
+	public void stopOverlays() {
+		_graffitiesLocationOverlay.stopPollingForGraffities();
+		_currentLocationOverlay.stopTrackingLocation();
+	}
     
     @Override
     protected void dispatchDraw(Canvas canvas) {   	
@@ -146,4 +154,6 @@ public class GraffitiMiniMapView extends ViewGroup{
         // TODO: rotate events too
         return super.dispatchTouchEvent(ev);
     }
+
+
 }
