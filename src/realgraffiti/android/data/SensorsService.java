@@ -41,7 +41,8 @@ public class SensorsService extends Service {
 	        public void onAccuracyChanged(Sensor sensor, int accuracy) {
 	            // do things if you're interested in accuracy changes
 	        }
-	        public void onSensorChanged(SensorEvent event) { 
+	        public void onSensorChanged(SensorEvent event) {
+	        	GraffitiLocationParametersGeneratorFactory.setGraffitiLocationOrientation(event.values[0]);
 //	        	_locParam.setAngle(event.values[0]);
 	        	Log.d("orientaion", "changed: " + event.values[0]);
 	        }
@@ -56,6 +57,7 @@ public class SensorsService extends Service {
 			int myLatitude = (int)(loc.getLatitude() * realgraffiti.android.maps.CurrentLocationOverlay.E6);
 			int myLongitude = (int)(loc.getLongitude() * realgraffiti.android.maps.CurrentLocationOverlay.E6);
 			//_locParam.setCoordinates(new Coordinates(myLongitude, myLongitude));
+			GraffitiLocationParametersGeneratorFactory.setGraffitiLocationCoordinates(new Coordinates(myLatitude, myLongitude));
 			Log.d("Location" , "Changed: " + myLatitude + ", " + myLongitude);
 		}
 		public void onProviderDisabled(String provider) {}

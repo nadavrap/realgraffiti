@@ -44,7 +44,7 @@ public class GraffitiServerPoller {
 			 Collection<Graffiti> graffities = null;
 			 while(_running){
 				 GraffitiLocationParameters graffitiLocationParameters = 
-					 GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator().getCurrentLocationParameters();
+					 GraffitiLocationParametersGeneratorFactory.getCurrentLocationParameters();
 				 
 				graffities = _realGraffitiData.getNearByGraffiti(graffitiLocationParameters);
 				
