@@ -16,7 +16,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 public class CurrentLocationOverlay extends ItemizedOverlay<OverlayItem>{
-	protected static final double E6 = 1000000;
+	public static final double E6 = 1000000;
 	private MapView _mapView;
 	private OverlayItem _currentLocationOverlayItem = null;
 	private LocationManager _locationManager;
@@ -66,6 +66,9 @@ public class CurrentLocationOverlay extends ItemizedOverlay<OverlayItem>{
 		      int latitude = (int)(location.getLatitude() * E6);
 		      int longitude = (int)(location.getLongitude() * E6);
 		      
+		      latitude = (int) (35.197*1000000);
+		      longitude = (int) (31.7753*1000000);
+				
 		      GeoPoint currentLocation = new GeoPoint(latitude, longitude);
 		      Log.d("realgraffiti", "location recieved");
 		      setCurrentLocation(currentLocation);
