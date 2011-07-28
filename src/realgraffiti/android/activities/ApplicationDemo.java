@@ -1,16 +1,14 @@
 package realgraffiti.android.activities;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import com.google.android.maps.MapActivity;
-
 import realgraffiti.android.R;
 import realgraffiti.android.data.GraffitiLocationParametersGeneratorFactory;
 import realgraffiti.android.data.RealGraffitiLocalData;
+import realgraffiti.android.data.SensorsService;
 import realgraffiti.android.maps.GraffitiMiniMapView;
-import realgraffiti.android.web.RealGraffitiDataProxy;
 import realgraffiti.common.data.RealGraffitiData;
 import realgraffiti.common.dataObjects.*;
 
@@ -40,6 +38,8 @@ public class ApplicationDemo extends MapActivity {
         
 		setAddNewGraffitiButton();       
         setGetNearByGraffitiButton();
+        //Start sensors service
+        startService(new Intent(ApplicationDemo.this,SensorsService.class));
     }
 
     @Override
