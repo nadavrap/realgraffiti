@@ -80,7 +80,7 @@ public class ApplicationDemo extends MapActivity {
 				
 				byte[] imageData = new byte[]{1,2,3,4};
 				Graffiti g = new Graffiti(glp);
-				g.set_imageData(imageData);
+				g.setImageData(imageData);
 				
 				_graffitiData.addNewGraffiti(g);
 			}

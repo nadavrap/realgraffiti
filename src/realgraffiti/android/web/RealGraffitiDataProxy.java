@@ -37,7 +37,7 @@ public class RealGraffitiDataProxy implements RealGraffitiData{
 		WebServiceClient client = new WebServiceClient(uploadUrl);
 		client.addParam(ACTION_KEY, _context.getString(R.string.addGraffiti));
 		client.addParam(ACTION_PARAMETER_KEY, graffitiDto);
-		client.addFile("file", graffitiDto.get_imageData());
+		client.addFile("file", graffitiDto.getImageData());
 		
 		client.execute(RequestMethod.POST);
 		
