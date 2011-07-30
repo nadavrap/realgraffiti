@@ -31,13 +31,12 @@ public class RealGraffitiDataProxy implements RealGraffitiData{
 	public boolean addNewGraffiti(Graffiti graffitiDto){	
 		Log.d("realgraffiti", "Add new graffiti");
 		
-		String uploadUrl = getUploadUrl();
-		Log.d("realgraffiti", "Upload url: " + uploadUrl);
+		String serverPath = _context.getString(R.string.ServerPath);
+		String url = serverPath + "/" +  _context.getString(R.string.RealGraffitiDataServlet);
 		
-		WebServiceClient client = new WebServiceClient(uploadUrl);
+		WebServiceClient client = new WebServiceClient(url);
 		client.addParam(ACTION_KEY, _context.getString(R.string.addGraffiti));
 		client.addParam(ACTION_PARAMETER_KEY, graffitiDto);
-		client.addFile("file", graffitiDto.getImageData());
 		
 		client.execute(RequestMethod.POST);
 		

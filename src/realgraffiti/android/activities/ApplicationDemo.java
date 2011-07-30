@@ -9,10 +9,13 @@ import realgraffiti.android.data.GraffitiLocationParametersGeneratorFactory;
 import realgraffiti.android.data.RealGraffitiLocalData;
 import realgraffiti.android.data.SensorsService;
 import realgraffiti.android.maps.GraffitiMiniMapView;
+import realgraffiti.android.web.RealGraffitiDataProxy;
 import realgraffiti.common.data.RealGraffitiData;
 import realgraffiti.common.dataObjects.*;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -30,6 +33,7 @@ public class ApplicationDemo extends MapActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+       // _graffitiData = new RealGraffitiDataProxy(this);
         _graffitiData = new RealGraffitiLocalData();
         setContentView(R.layout.application_demo);       
         
@@ -74,15 +78,13 @@ public class ApplicationDemo extends MapActivity {
         button.setOnClickListener(new OnClickListener() {
 		@Override
 			public void onClick(View v) {
+				AddNewGraffitiTask addGraffitiTask = new AddNewGraffitiTask();
 				GraffitiLocationParameters glp = GraffitiLocationParametersGeneratorFactory.
-					getGaffitiLocationParametersGenerator().
-					getCurrentLocationParameters();
+					getGaffitiLocationParametersGenerator().getCurrentLocationParameters();
 				
-				byte[] imageData = new byte[]{1,2,3,4};
-				Graffiti g = new Graffiti(glp);
-				g.setImageData(imageData);
-				
-				_graffitiData.addNewGraffiti(g);
+				byte [] imageData = new byte[]{1,2,3,4};
+				Graffiti graffiti = new Graffiti(glp, imageData);
+				addGraffitiTask.execute(graffiti);
 			}
 		});
 	}
@@ -92,4 +94,35 @@ public class ApplicationDemo extends MapActivity {
 		// TODO Auto-generated method stub
 		return false;
 	}
+	
+	private byte[] createRandomImage(){
+		int n = 10000;
+		byte[] imageData = new byte[n];
+		
+		for(int i=0;i<n;i++)
+			imageData[i] = (byte) (Math.floor(Math.random()*255));
+		
+		return imageData;
+	}
+	
+	private class AddNewGraffitiTask extends AsyncTask<Graffiti, Integer, Boolean> {
+		 private ProgressDialog _progressDialog; 
+	     protected Boolean doInBackground(Graffiti... graffiti) {
+	    	 
+	    	 GraffitiLocationParameters glp = GraffitiLocationParametersGeneratorFactory.
+				getGaffitiLocationParametersGenerator().
+				getCurrentLocationParameters();
+			
+			return _graffitiData.addNewGraffiti(graffiti[0]);
+	     }
+
+	     protected void onPreExecute() {
+	    	 _progressDialog = ProgressDialog.show(ApplicationDemo.this, "", 
+                     "Saving... Please wait.", true);
+	     }
+	     
+	     protected void onPostExecute(Boolean result) {
+	    	 _progressDialog.dismiss();
+	     }
+	 }
 }
