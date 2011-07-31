@@ -9,7 +9,7 @@ import realgraffiti.common.dataObjects.Coordinates;
 import realgraffiti.common.dataObjects.GraffitiLocationParameters;
 
 public class GraffitiLocationParametersFakeGenerator implements
-		GraffitiLocationParametesrGenerator {
+		GraffitiLocationParametersGenerator {
 	@Override
 	public GraffitiLocationParameters getCurrentLocationParameters() {
 		List<Double> siftDescriptors = new ArrayList<Double>();

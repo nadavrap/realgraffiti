@@ -3,27 +3,28 @@ package realgraffiti.android.activities;
 import java.util.Collection;
 import java.util.List;
 
-import com.google.android.maps.MapActivity;
 import realgraffiti.android.R;
+import realgraffiti.android.data.GraffitiLocationParametersGenerator;
 import realgraffiti.android.data.GraffitiLocationParametersGeneratorFactory;
 import realgraffiti.android.data.RealGraffitiLocalData;
-import realgraffiti.android.data.SensorsService;
+import realgraffiti.android.data.SensorsGraffitiLocationParametersGeneretor;
 import realgraffiti.android.maps.GraffitiMiniMapView;
-import realgraffiti.android.web.RealGraffitiDataProxy;
 import realgraffiti.common.data.RealGraffitiData;
-import realgraffiti.common.dataObjects.*;
-
+import realgraffiti.common.dataObjects.Coordinates;
+import realgraffiti.common.dataObjects.Graffiti;
+import realgraffiti.common.dataObjects.GraffitiLocationParameters;
 import android.app.ProgressDialog;
-import android.content.Intent;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+
+import com.google.android.maps.MapActivity;
 
 
 public class ApplicationDemo extends MapActivity {
@@ -40,10 +41,12 @@ public class ApplicationDemo extends MapActivity {
         GraffitiMiniMapView miniMapView = (GraffitiMiniMapView)findViewById(R.id.demo_mini_map);
         miniMapView.setRealGraffitiData(_graffitiData);
         
-		setAddNewGraffitiButton();       
+		setAddNewGraffitiButton(this);       
         setGetNearByGraffitiButton();
         //Start sensors service
-        startService(new Intent(ApplicationDemo.this,SensorsService.class));
+        //startService(new Intent(ApplicationDemo.this,SensorsService.class));
+        GraffitiLocationParameters glp = GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator(getApplicationContext()).getCurrentLocationParameters();
+        Log.d("ApplicationDemo","onCreate");
     }
 
     @Override
@@ -73,15 +76,19 @@ public class ApplicationDemo extends MapActivity {
 		});
 	}
 
-	private void setAddNewGraffitiButton() {
+	private void setAddNewGraffitiButton(final Context context) {
 		Button button = (Button)findViewById(R.id.add_new_graffiti_button);
         button.setOnClickListener(new OnClickListener() {
 		@Override
 			public void onClick(View v) {
 				AddNewGraffitiTask addGraffitiTask = new AddNewGraffitiTask();
-				GraffitiLocationParameters glp = GraffitiLocationParametersGeneratorFactory.
-					getGaffitiLocationParametersGenerator().getCurrentLocationParameters();
-				
+//				GraffitiLocationParameters glp = GraffitiLocationParametersGeneratorFactory.
+//					getGaffitiLocationParametersGenerator().getCurrentLocationParameters();
+				GraffitiLocationParameters glp = GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator(context).getCurrentLocationParameters();
+//				GraffitiLocationParametersGenerator glp = new  SensorsGraffitiLocationParametersGeneretor(context);
+//				if (glp instanceof SensorsGraffitiLocationParametersGeneretor)
+//					((SensorsGraffitiLocationParametersGeneretor)glp).startListening(context);
+				Log.d("ApplicationDemo","newButton");
 				byte [] imageData = new byte[]{1,2,3,4};
 				Graffiti graffiti = new Graffiti(glp, imageData);
 				addGraffitiTask.execute(graffiti);
@@ -109,9 +116,14 @@ public class ApplicationDemo extends MapActivity {
 		 private ProgressDialog _progressDialog; 
 	     protected Boolean doInBackground(Graffiti... graffiti) {
 	    	 
-	    	 GraffitiLocationParameters glp = GraffitiLocationParametersGeneratorFactory.
-				getGaffitiLocationParametersGenerator().
-				getCurrentLocationParameters();
+//	    	 GraffitiLocationParameters glp = GraffitiLocationParametersGeneratorFactory.
+//				getGaffitiLocationParametersGenerator().
+//				getCurrentLocationParameters();
+	    	 GraffitiLocationParameters glp = GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator(getApplicationContext()).getCurrentLocationParameters();
+//	    	 GraffitiLocationParametersGenerator glp = new SensorsGraffitiLocationParametersGeneretor(getApplicationContext());
+//				if (glp instanceof SensorsGraffitiLocationParametersGeneretor)
+//					((SensorsGraffitiLocationParametersGeneretor)glp).startListening(getApplicationContext());
+				Log.d("ApplicationDemo","newTask");	
 			
 			return _graffitiData.addNewGraffiti(graffiti[0]);
 	     }
