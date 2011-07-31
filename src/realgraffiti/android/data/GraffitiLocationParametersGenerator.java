@@ -2,6 +2,6 @@ package realgraffiti.android.data;
 
 import realgraffiti.common.dataObjects.GraffitiLocationParameters;
 
-public interface GraffitiLocationParametesrGenerator {
+public interface GraffitiLocationParametersGenerator {
 	GraffitiLocationParameters getCurrentLocationParameters();
 }
