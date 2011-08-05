@@ -15,6 +15,7 @@ import realgraffiti.android.web.GraffitiServerPoller;
 import realgraffiti.common.data.RealGraffitiData;
 import realgraffiti.common.dataObjects.Graffiti;
 
+import android.content.Context;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
@@ -28,13 +29,16 @@ public class GraffitiesLocationsOverlay extends ItemizedOverlay<OverlayItem> {
 	private GraffitiServerPoller _graffitiServerPoller = null;
 	private MapView _mapView;
 
+	private Context _context;
+
 	private static final int DATA_POLLING_INTERVAL = 10000;
 	
-	public GraffitiesLocationsOverlay(Drawable defaultMarker, MapView mapView, RealGraffitiData realGraffitiData) {
+	public GraffitiesLocationsOverlay(Context context, Drawable defaultMarker, MapView mapView, RealGraffitiData realGraffitiData) {
 		  super(defaultMarker, mapView.getResourceProxy());
 		  
 		  _realGraffitiData = realGraffitiData;
 		  _mapView = mapView;
+		  _context = context;
 		  populate();
 	}
 	
@@ -84,7 +88,7 @@ public class GraffitiesLocationsOverlay extends ItemizedOverlay<OverlayItem> {
 	}
 
 	private void initializeGraffitiServerPoller() {
-	    _graffitiServerPoller = new GraffitiServerPoller(_realGraffitiData, DATA_POLLING_INTERVAL);
+	    _graffitiServerPoller = new GraffitiServerPoller(_context, _realGraffitiData, DATA_POLLING_INTERVAL);
 	    
 	    _graffitiServerPoller.setOnPoll(new GraffitiPollListener() {
 			@Override

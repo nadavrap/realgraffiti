@@ -39,7 +39,7 @@ public class GraffitisLocationsMap extends Activity {
 	    
 	    Drawable graffitiMarker = this.getResources().getDrawable(R.drawable.spraycan);
 	    RealGraffitiData realGraffitiData = new RealGraffitiLocalData();
-	    GraffitiesLocationsOverlay graffitiOverlay = new GraffitiesLocationsOverlay(graffitiMarker, mapView, realGraffitiData);
+	    GraffitiesLocationsOverlay graffitiOverlay = new GraffitiesLocationsOverlay(this, graffitiMarker, mapView, realGraffitiData);
 	    mapView.getOverlays().add(graffitiOverlay);
 	    
 	    graffitiOverlay.startPollingForGraffities();

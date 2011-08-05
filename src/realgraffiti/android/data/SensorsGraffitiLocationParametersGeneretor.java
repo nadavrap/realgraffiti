@@ -24,6 +24,11 @@ public class SensorsGraffitiLocationParametersGeneretor implements GraffitiLocat
 		startListening(context);
 	}
 
+	@Override
+	public boolean isLocationParametersAvailable() {
+		return (_graffitiLocationParameters != null);
+	};
+	
 	public GraffitiLocationParameters generate(){
 		return _graffitiLocationParameters;
 	}
@@ -68,5 +73,7 @@ public class SensorsGraffitiLocationParametersGeneretor implements GraffitiLocat
 	@Override
 	public GraffitiLocationParameters getCurrentLocationParameters() {
 		return _graffitiLocationParameters;
-	};
+	}
+
+
 }

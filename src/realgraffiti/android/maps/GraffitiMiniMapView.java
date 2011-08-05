@@ -35,6 +35,7 @@ public class GraffitiMiniMapView extends ViewGroup{
     
     private CurrentLocationOverlay _currentLocationOverlay;
     private GraffitiesLocationsOverlay _graffitiesLocationOverlay;
+	private Context _context;
     
 	public GraffitiMiniMapView(Context context) {
 		super(context);
@@ -43,6 +44,7 @@ public class GraffitiMiniMapView extends ViewGroup{
 	
     public GraffitiMiniMapView(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		_context = context;
 		initView(context);
 	}  
     
@@ -77,7 +79,7 @@ public class GraffitiMiniMapView extends ViewGroup{
     	_realGraffitiData = realGraffitiData;
     	
     	Drawable graffitiMarker = this.getResources().getDrawable(R.drawable.graffiti_mark);
-    	_graffitiesLocationOverlay = new GraffitiesLocationsOverlay(graffitiMarker, _mapView, _realGraffitiData);
+    	_graffitiesLocationOverlay = new GraffitiesLocationsOverlay(_context, graffitiMarker, _mapView, _realGraffitiData);
 	    _mapView.getOverlays().add(_graffitiesLocationOverlay);
 	    
 	    _graffitiesLocationOverlay.startPollingForGraffities();

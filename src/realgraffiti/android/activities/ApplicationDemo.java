@@ -9,6 +9,7 @@ import realgraffiti.android.data.GraffitiLocationParametersGeneratorFactory;
 import realgraffiti.android.data.RealGraffitiLocalData;
 import realgraffiti.android.data.SensorsGraffitiLocationParametersGeneretor;
 import realgraffiti.android.maps.GraffitiMiniMapView;
+import realgraffiti.android.web.RealGraffitiDataProxy;
 import realgraffiti.common.data.RealGraffitiData;
 import realgraffiti.common.dataObjects.Coordinates;
 import realgraffiti.common.dataObjects.Graffiti;
@@ -23,25 +24,27 @@ import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.android.maps.MapActivity;
 
 
 public class ApplicationDemo extends MapActivity {
+	protected static final CharSequence NO_LOCATION_AVAILIBLE_MESSAGE = null;
 	private RealGraffitiData _graffitiData;
 	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-       // _graffitiData = new RealGraffitiDataProxy(this);
-        _graffitiData = new RealGraffitiLocalData();
+        _graffitiData = new RealGraffitiDataProxy(this);
+        //_graffitiData = new RealGraffitiLocalData();
         setContentView(R.layout.application_demo);       
+
+        //GraffitiMiniMapView miniMapView = (GraffitiMiniMapView)findViewById(R.id.demo_mini_map);
+        //miniMapView.setRealGraffitiData(_graffitiData);
         
-        GraffitiMiniMapView miniMapView = (GraffitiMiniMapView)findViewById(R.id.demo_mini_map);
-        miniMapView.setRealGraffitiData(_graffitiData);
-        
-		setAddNewGraffitiButton(this);       
+		setAddNewGraffitiButton();       
         setGetNearByGraffitiButton();
         //Start sensors service
         //startService(new Intent(ApplicationDemo.this,SensorsService.class));
@@ -76,22 +79,27 @@ public class ApplicationDemo extends MapActivity {
 		});
 	}
 
-	private void setAddNewGraffitiButton(final Context context) {
+	private void setAddNewGraffitiButton() {
 		Button button = (Button)findViewById(R.id.add_new_graffiti_button);
         button.setOnClickListener(new OnClickListener() {
 		@Override
 			public void onClick(View v) {
 				AddNewGraffitiTask addGraffitiTask = new AddNewGraffitiTask();
-//				GraffitiLocationParameters glp = GraffitiLocationParametersGeneratorFactory.
-//					getGaffitiLocationParametersGenerator().getCurrentLocationParameters();
-				GraffitiLocationParameters glp = GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator(context).getCurrentLocationParameters();
-//				GraffitiLocationParametersGenerator glp = new  SensorsGraffitiLocationParametersGeneretor(context);
-//				if (glp instanceof SensorsGraffitiLocationParametersGeneretor)
-//					((SensorsGraffitiLocationParametersGeneretor)glp).startListening(context);
-				Log.d("ApplicationDemo","newButton");
-				byte [] imageData = new byte[]{1,2,3,4};
-				Graffiti graffiti = new Graffiti(glp, imageData);
-				addGraffitiTask.execute(graffiti);
+
+				GraffitiLocationParametersGenerator graffitiLocationParametersGenerator = GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator(ApplicationDemo.this);
+				 
+				
+				if(graffitiLocationParametersGenerator.isLocationParametersAvailable() == false){
+					Toast noLocationAvailibleToast = Toast.makeText(getApplicationContext(), NO_LOCATION_AVAILIBLE_MESSAGE, 1000);
+					noLocationAvailibleToast.show();
+				} else{
+					GraffitiLocationParameters	glp = graffitiLocationParametersGenerator.getCurrentLocationParameters();
+	
+					Log.d("ApplicationDemo","newButton");
+					byte [] imageData = createRandomImage();
+					Graffiti graffiti = new Graffiti(glp, imageData);
+					addGraffitiTask.execute(graffiti);
+				}
 			}
 		});
 	}
