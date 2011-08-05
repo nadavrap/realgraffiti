@@ -65,10 +65,7 @@ public class CurrentLocationOverlay extends ItemizedOverlay<OverlayItem>{
 		    public void onLocationChanged(Location location) {
 		      int latitude = (int)(location.getLatitude() * E6);
 		      int longitude = (int)(location.getLongitude() * E6);
-		      
-		      latitude = (int) (35.197*1000000);
-		      longitude = (int) (31.7753*1000000);
-				
+		      			
 		      GeoPoint currentLocation = new GeoPoint(latitude, longitude);
 		      Log.d("realgraffiti", "location recieved");
 		      setCurrentLocation(currentLocation);

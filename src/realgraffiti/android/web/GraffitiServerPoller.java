@@ -3,7 +3,9 @@ package realgraffiti.android.web;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import android.content.Context;
 import android.os.AsyncTask;
+import realgraffiti.android.data.GraffitiLocationParametersGenerator;
 import realgraffiti.android.data.GraffitiLocationParametersGeneratorFactory;
 import realgraffiti.common.data.RealGraffitiData;
 import realgraffiti.common.dataObjects.Graffiti;
@@ -14,13 +16,14 @@ public class GraffitiServerPoller {
 	private int _pollingInterval;
 	private GraffitiPollListener _polllListener;
 	private Collection<Graffiti> _recievedGraffiteis;
-	
+	private Context _context;
 	private GraffitiPoll _graffitiPolltask;
 	
-	public GraffitiServerPoller(RealGraffitiData realGraffitiData, int pollingIntervapl){
+	public GraffitiServerPoller(Context context, RealGraffitiData realGraffitiData, int pollingIntervapl){
 		_realGraffitiData = realGraffitiData;
 		_pollingInterval = pollingIntervapl;
 		_recievedGraffiteis = new ArrayList<Graffiti>();
+		_context = context;
 	}
 	
 	public void setOnPoll(GraffitiPollListener pollListener){
@@ -43,25 +46,28 @@ public class GraffitiServerPoller {
 		protected Collection<Graffiti> doInBackground(Integer... params) {
 			 Collection<Graffiti> graffities = null;
 			 while(_running){
-				 GraffitiLocationParameters graffitiLocationParameters = 
-					 GraffitiLocationParametersGeneratorFactory.getCurrentLocationParameters();
+				 GraffitiLocationParametersGenerator locationParametersGenerator = 
+					 GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator(_context);
 				 
-				graffities = _realGraffitiData.getNearByGraffiti(graffitiLocationParameters);
-				
-				// find the newly added graffities
-				graffities.removeAll(_recievedGraffiteis);
-				_recievedGraffiteis.addAll(graffities);
-				
-				publishProgress(graffities);
-				
-				try {
-					Thread.sleep(params[0]);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+				if(locationParametersGenerator.isLocationParametersAvailable()){
+					GraffitiLocationParameters graffitiLocationParameters = locationParametersGenerator.getCurrentLocationParameters();
+					graffities = _realGraffitiData.getNearByGraffiti(graffitiLocationParameters);
+					
+					// find the newly added graffities
+					graffities.removeAll(_recievedGraffiteis);
+					_recievedGraffiteis.addAll(graffities);
+					
+					publishProgress(graffities);
+					
+					try {
+						Thread.sleep(params[0]);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
-			 }
-			 
+			 }	 
 			return graffities;
+			
 		}
 		 
 		 @Override

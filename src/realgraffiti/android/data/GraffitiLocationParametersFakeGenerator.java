@@ -37,4 +37,10 @@ public class GraffitiLocationParametersFakeGenerator implements
 		
 		return locationParameter;
 	}
+
+	@Override
+	public boolean isLocationParametersAvailable() {
+		// TODO Auto-generated method stub
+		return true;
+	}
 }
