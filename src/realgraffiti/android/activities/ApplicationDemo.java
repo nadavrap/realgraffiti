@@ -37,25 +37,39 @@ public class ApplicationDemo extends MapActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        _graffitiData = new RealGraffitiDataProxy(this);
-        //_graffitiData = new RealGraffitiLocalData();
-        setContentView(R.layout.application_demo);       
-
-        //GraffitiMiniMapView miniMapView = (GraffitiMiniMapView)findViewById(R.id.demo_mini_map);
-        //miniMapView.setRealGraffitiData(_graffitiData);
+        Log.d("realgraffiti life cycle", "on craete");
+        setContentView(R.layout.application_demo);
+        
+        //_graffitiData = new RealGraffitiDataProxy(this);
+        _graffitiData = new RealGraffitiLocalData();
+        
+        GraffitiMiniMapView miniMapView = (GraffitiMiniMapView)findViewById(R.id.demo_mini_map);
+        miniMapView.setRealGraffitiData(_graffitiData);
         
 		setAddNewGraffitiButton();       
         setGetNearByGraffitiButton();
-        //Start sensors service
-        //startService(new Intent(ApplicationDemo.this,SensorsService.class));
-        GraffitiLocationParameters glp = GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator(getApplicationContext()).getCurrentLocationParameters();
+        
         Log.d("ApplicationDemo","onCreate");
+        GraffitiLocationParametersGenerator graffitiLocationParametersGenerator = GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator(ApplicationDemo.this);
     }
 
+    protected void onStart(){
+    	super.onStart();
+    	Log.d("realgraffiti life cycle", "on start");
+    	GraffitiMiniMapView miniMapView = (GraffitiMiniMapView)findViewById(R.id.demo_mini_map);
+    	miniMapView.startOverlays();
+	}
+    
+    protected void onRestart(){super.onRestart(); Log.d("realgraffiti life cycle", "on restart");}
+
+    protected void onStop(){super.onStop(); Log.d("realgraffiti life cycle", "on stop");}
+
+    protected void onDestroy(){super.onDestroy(); Log.d("realgraffiti life cycle", "on distroy");}
+    
     @Override
     protected void onPause() {
         super.onPause();
-
+        Log.d("realgraffiti life cycle", "on pouse");
         GraffitiMiniMapView miniMapView = (GraffitiMiniMapView)findViewById(R.id.demo_mini_map);
         miniMapView.stopOverlays();
     }
@@ -63,6 +77,7 @@ public class ApplicationDemo extends MapActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d("realgraffiti life cycle", "on resume");
         // The activity has become visible (it is now "resumed").
     }
     
@@ -111,7 +126,7 @@ public class ApplicationDemo extends MapActivity {
 	}
 	
 	private byte[] createRandomImage(){
-		int n = 10000;
+		int n = 50*50;
 		byte[] imageData = new byte[n];
 		
 		for(int i=0;i<n;i++)
