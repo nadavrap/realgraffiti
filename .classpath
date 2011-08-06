@@ -13,5 +13,6 @@
 	<classpathentry kind="lib" path="Libs/osmdroid-android-3.0.4.jar"/>
 	<classpathentry kind="lib" path="Libs/osmdroid-google-3.0.4.jar"/>
 	<classpathentry kind="lib" path="Libs/slf4j-android-1.5.8.jar"/>
+	<classpathentry kind="lib" path="/RealGraffitiCommon/Libs/commons-codec-1.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

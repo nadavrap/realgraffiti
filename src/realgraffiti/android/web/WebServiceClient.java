@@ -31,9 +31,11 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 
+import realgraffiti.common.data.JsonConverter;
+
 import android.util.Log;
 
-import com.google.gson.Gson;
+
 
 public class WebServiceClient {
 	 
@@ -69,11 +71,10 @@ public class WebServiceClient {
 		}
     }
  
-    public Object getResponseObject(Type type){
-    	Gson gson = new Gson();
+    public Object getResponseObject(Type typeOfObject){   	
     	String json = getResponseString().trim();
-    	Object responseObject = gson.fromJson(json, type);
-    	
+    	Object responseObject = JsonConverter.fromJson(json, typeOfObject);
+
     	return responseObject;
     }
     
@@ -175,12 +176,10 @@ public class WebServiceClient {
 		
 		List<BasicNameValuePair> parameters = new ArrayList<BasicNameValuePair>();
 		
-		Gson jsonSerializer = new Gson();
-		
 		for(Entry<String, Object> entry: params.entrySet()){
 			StringBody paramValue;
 
-			String json = jsonSerializer.toJson(entry.getValue());
+			String json = JsonConverter.toJson(entry.getValue());
 			Log.d("realgraffiti", "json of " + entry.getKey() + " :" + json);
 						
 			parameters.add(new BasicNameValuePair(entry.getKey(), json));
@@ -211,9 +210,9 @@ public class WebServiceClient {
 
 	private void addParametersToMultipartEntity(MultipartEntity httpEntity) {
 		if(!params.isEmpty()){
-			Gson jsonSerializer = new Gson();
+			
 			for(Entry<String, Object> entry: params.entrySet()){
-				String json = jsonSerializer.toJson(entry.getValue());
+				String json = JsonConverter.toJson(entry.getValue());
 				Log.d("realgraffiti", "json of " + entry.getKey() + " :" + json);
 				
 				StringBody paramValue;

@@ -5,7 +5,6 @@ import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
-import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.reflect.TypeToken;
 import android.content.Context;
@@ -92,22 +91,6 @@ public class RealGraffitiDataProxy implements RealGraffitiData{
 		byte[] imageData = (byte[])client.getResponseObject(byte[].class);
 		return imageData;
 	}
-	
-	  public class SkipTypeStrategy implements ExclusionStrategy {
-		    private final Class<?> typeToSkip;
-	
-		    private SkipTypeStrategy(Class<?> typeToSkip) {
-		      this.typeToSkip = typeToSkip;
-		    }
-	
-		    public boolean shouldSkipClass(Class<?> clazz) {
-		      return false;
-		    }
-	
-		    public boolean shouldSkipField(FieldAttributes f) {
-		      return f.getClass().equals(typeToSkip);
-		    }
-		  }
 }
 
 
