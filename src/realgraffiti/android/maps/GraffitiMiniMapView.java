@@ -70,9 +70,7 @@ public class GraffitiMiniMapView extends ViewGroup{
 	    Drawable currentLocationMarker = this.getResources().getDrawable(R.drawable.current_location);
 	    LocationManager locationManager = (LocationManager) context.getSystemService(context.LOCATION_SERVICE);
 	    _currentLocationOverlay = new CurrentLocationOverlay(currentLocationMarker, _mapView,locationManager);
-	    _mapView.getOverlays().add(_currentLocationOverlay);
-	    
-	    _currentLocationOverlay.startTrackingLocation();
+	    _mapView.getOverlays().add(_currentLocationOverlay);    
     }
    
     public void setRealGraffitiData(RealGraffitiData realGraffitiData){
@@ -81,8 +79,11 @@ public class GraffitiMiniMapView extends ViewGroup{
     	Drawable graffitiMarker = this.getResources().getDrawable(R.drawable.graffiti_mark);
     	_graffitiesLocationOverlay = new GraffitiesLocationsOverlay(_context, graffitiMarker, _mapView, _realGraffitiData);
 	    _mapView.getOverlays().add(_graffitiesLocationOverlay);
-	    
-	    _graffitiesLocationOverlay.startPollingForGraffities();
+    }
+    
+    public void startOverlays(){
+    	_graffitiesLocationOverlay.startPollingForGraffities();
+    	_currentLocationOverlay.startTrackingLocation();
     }
     
 	public void stopOverlays() {

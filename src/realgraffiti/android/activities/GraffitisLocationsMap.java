@@ -17,15 +17,10 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.widget.LinearLayout;
 
-/*
-import com.google.android.maps.MapActivity;
-import com.google.android.maps.MapView;
-import com.google.android.maps.MyLocationOverlay;
-*/
-
 public class GraffitisLocationsMap extends Activity {
-
-	private GraffitiServerPoller _graffitiServerPoller = null;
+	private GraffitiesLocationsOverlay _graffitiLocationsOverlay;
+	private CurrentLocationOverlay _currentLocationOverlay;
+	
 	private final int ZOOM_LEVEL = 13;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -39,17 +34,13 @@ public class GraffitisLocationsMap extends Activity {
 	    
 	    Drawable graffitiMarker = this.getResources().getDrawable(R.drawable.spraycan);
 	    RealGraffitiData realGraffitiData = new RealGraffitiLocalData();
-	    GraffitiesLocationsOverlay graffitiOverlay = new GraffitiesLocationsOverlay(this, graffitiMarker, mapView, realGraffitiData);
-	    mapView.getOverlays().add(graffitiOverlay);
-	    
-	    graffitiOverlay.startPollingForGraffities();
+	    _graffitiLocationsOverlay = new GraffitiesLocationsOverlay(this, graffitiMarker, mapView, realGraffitiData);
+	    mapView.getOverlays().add(_graffitiLocationsOverlay);
 	    
 	    Drawable currentLocationMarker = this.getResources().getDrawable(R.drawable.current_location);
 	    LocationManager locationManager = (LocationManager) this.getSystemService(this.LOCATION_SERVICE);
-	    CurrentLocationOverlay currentLocationOverLay = new CurrentLocationOverlay(currentLocationMarker, mapView,locationManager);
-	    mapView.getOverlays().add(currentLocationOverLay);
-	    
-	    currentLocationOverLay.startTrackingLocation();
+	    _currentLocationOverlay = new CurrentLocationOverlay(currentLocationMarker, mapView,locationManager);
+	    mapView.getOverlays().add(_currentLocationOverlay);
 	}
 	
 	protected boolean isRouteDisplayed() {
@@ -58,10 +49,17 @@ public class GraffitisLocationsMap extends Activity {
 	}
 	
 	@Override
+	protected void onStart(){
+		super.onStart();
+		_graffitiLocationsOverlay.startPollingForGraffities();
+		_currentLocationOverlay.startTrackingLocation();
+	}
+	
+	@Override
 	protected void onPause(){
 		super.onPause();
-		if(_graffitiServerPoller != null)
-			_graffitiServerPoller.stopPolling();
+		_graffitiLocationsOverlay.stopPollingForGraffities();
+		_currentLocationOverlay.stopTrackingLocation();
 	}
 	
 	@Override
