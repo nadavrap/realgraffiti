@@ -30,7 +30,7 @@ import com.google.android.maps.MapActivity;
 
 
 public class ApplicationDemo extends MapActivity {
-	protected static final CharSequence NO_LOCATION_AVAILIBLE_MESSAGE = null;
+	protected static final CharSequence NO_LOCATION_AVAILIBLE_MESSAGE = "Location not avilible";
 	private RealGraffitiData _graffitiData;
 	
     /** Called when the activity is first created. */

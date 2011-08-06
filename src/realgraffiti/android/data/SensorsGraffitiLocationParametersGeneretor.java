@@ -49,7 +49,7 @@ public class SensorsGraffitiLocationParametersGeneretor implements GraffitiLocat
 	        }
 	        public void onSensorChanged(SensorEvent event) {
 	        	//GraffitiLocationParametersGeneratorFactory.setGraffitiLocationOrientation(event.values[0]);
-	        	_graffitiLocationParameters.set_orientation(new Orientation(event.values));
+	        	_graffitiLocationParameters.setOrientation(new Orientation(event.values));
 	        	Log.d("SensorGenerator", "Orientation changed: x:" + event.values[0] +
 	        						", y:" + event.values[1] +
 	        						", z:" + event.values[2]);
