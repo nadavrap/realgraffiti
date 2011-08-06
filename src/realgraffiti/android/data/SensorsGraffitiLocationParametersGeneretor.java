@@ -19,14 +19,14 @@ public class SensorsGraffitiLocationParametersGeneretor implements GraffitiLocat
 	private final int orientationDelay = SensorManager.SENSOR_DELAY_NORMAL;
 	private LocationManager _myLocationManager;
 	private MyLocationListener _myLocationListener;
-	
+	private boolean isLocationParametersAvailable = false;
 	public SensorsGraffitiLocationParametersGeneretor(Context context) {
 		startListening(context);
 	}
 
 	@Override
 	public boolean isLocationParametersAvailable() {
-		return (_graffitiLocationParameters != null);
+		return isLocationParametersAvailable;
 	};
 	
 	public GraffitiLocationParameters generate(){
@@ -60,6 +60,8 @@ public class SensorsGraffitiLocationParametersGeneretor implements GraffitiLocat
 	}
 	private class MyLocationListener implements LocationListener{
 		public void onLocationChanged(Location loc) {
+			isLocationParametersAvailable = true;
+			
 			int myLatitude = (int)(loc.getLatitude() * realgraffiti.android.maps.CurrentLocationOverlay.E6);
 			int myLongitude = (int)(loc.getLongitude() * realgraffiti.android.maps.CurrentLocationOverlay.E6);
 			//GraffitiLocationParametersGeneratorFactory.setGraffitiLocationCoordinates(new Coordinates(myLatitude, myLongitude));
