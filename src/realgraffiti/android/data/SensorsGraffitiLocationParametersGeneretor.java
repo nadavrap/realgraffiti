@@ -20,6 +20,9 @@ public class SensorsGraffitiLocationParametersGeneretor implements GraffitiLocat
 	private LocationManager _myLocationManager;
 	private MyLocationListener _myLocationListener;
 	private boolean isLocationParametersAvailable = false;
+	private SensorEventListener _magnetlistener;
+	private SensorManager _mySensorManager;
+	
 	public SensorsGraffitiLocationParametersGeneretor(Context context) {
 		startListening(context);
 	}
@@ -38,12 +41,16 @@ public class SensorsGraffitiLocationParametersGeneretor implements GraffitiLocat
 		_myLocationListener = new MyLocationListener();
 		_myLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,_myLocationListener);
 		
+		//Get location from last known one
+		Location loc = _myLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		_graffitiLocationParameters.setCoordinates(new Coordinates(loc.getLatitude(), loc.getLongitude()));
+		
 		// First, get an instance of the SensorManager
-	    SensorManager sman = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
+	    _mySensorManager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
 	    // Second, get the sensor you're interested in
-	    Sensor magnetfield = sman.getDefaultSensor(Sensor.TYPE_ORIENTATION);
+	    Sensor magnetfield = _mySensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
 	    // Third, implement a SensorEventListener class
-	    SensorEventListener magnetlistener = new SensorEventListener() {
+	    _magnetlistener = new SensorEventListener() {
 	        public void onAccuracyChanged(Sensor sensor, int accuracy) {
 	            // do things if you're interested in accuracy changes
 	        }
@@ -56,7 +63,7 @@ public class SensorsGraffitiLocationParametersGeneretor implements GraffitiLocat
 	        }
 	    };
 	    // Finally, register the listener
-	    sman.registerListener(magnetlistener, magnetfield, orientationDelay);
+	    _mySensorManager.registerListener(_magnetlistener, magnetfield, orientationDelay);
 	}
 	private class MyLocationListener implements LocationListener{
 		public void onLocationChanged(Location loc) {
@@ -76,6 +83,8 @@ public class SensorsGraffitiLocationParametersGeneretor implements GraffitiLocat
 	public GraffitiLocationParameters getCurrentLocationParameters() {
 		return _graffitiLocationParameters;
 	}
-
-
+	public void stopListening(){
+		_myLocationManager.removeUpdates(_myLocationListener);
+		_mySensorManager.unregisterListener(_magnetlistener);
+	}
 }
