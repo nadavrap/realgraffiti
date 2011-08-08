@@ -1,6 +1,11 @@
 package realgraffiti.android.activities;
 
+import realgraffiti.android.R;
+import realgraffiti.android.paint.ColorPickerDialog;
+import realgraffiti.android.paint.GraphicsActivity;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,8 +25,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import realgraffiti.android.paint.*;
-import realgraffiti.android.R;
 
 public class FingerPaintActivity extends GraphicsActivity
 implements ColorPickerDialog.OnColorChangedListener {
@@ -143,8 +146,9 @@ implements ColorPickerDialog.OnColorChangedListener {
 			mCanvas.drawPath(mPath, mPaint);
 			// kill this so we don't double draw
 			mPath.reset();
+			//finishPaint();//Not belong to here, for development only
 		}
-
+		
 		@Override
 		public boolean onTouchEvent(MotionEvent event) {
 			float x = event.getX();
@@ -173,6 +177,7 @@ implements ColorPickerDialog.OnColorChangedListener {
 	private static final int BLUR_MENU_ID = Menu.FIRST + 2;
 	private static final int ERASE_MENU_ID = Menu.FIRST + 3;
 	private static final int SRCATOP_MENU_ID = Menu.FIRST + 4;
+	private static final int SAVE_MENU_ID = Menu.FIRST + 5;
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -183,6 +188,7 @@ implements ColorPickerDialog.OnColorChangedListener {
 		menu.add(0, BLUR_MENU_ID, 0, "Blur").setShortcut('5', 'z');
 		menu.add(0, ERASE_MENU_ID, 0, "Erase").setShortcut('5', 'z');
 		menu.add(0, SRCATOP_MENU_ID, 0, "SrcATop").setShortcut('5', 'z');
+		menu.add(0, SAVE_MENU_ID, 0, "Save").setShortcut('5', 'z');
 
 		/****   Is this the mechanism to extend with filter effects?
         Intent intent = new Intent(null, getIntent().getData());
@@ -233,8 +239,20 @@ implements ColorPickerDialog.OnColorChangedListener {
 					PorterDuff.Mode.SRC_ATOP));
 			mPaint.setAlpha(0x80);
 			return true;
+		case SAVE_MENU_ID:
+			finishPaint();
+			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	public void finishPaint(){
+		//First save the image somewhere
+		
+		//Then finish, and set the image location
+		Intent resultIntent = new Intent();
+		resultIntent.putExtra("paint", "text to be add");
+		setResult(Activity.RESULT_OK, resultIntent);
+		finish();
 	}
 	public class MyDataObject {
 		private Bitmap _bitmap;

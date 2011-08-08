@@ -43,7 +43,9 @@ public class SensorsGraffitiLocationParametersGeneretor implements GraffitiLocat
 		
 		//Get location from last known one
 		Location loc = _myLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-		_graffitiLocationParameters.setCoordinates(new Coordinates(loc.getLatitude(), loc.getLongitude()));
+		if(loc != null) {
+			_graffitiLocationParameters.setCoordinates(new Coordinates(loc.getLatitude(), loc.getLongitude()));
+		}
 		
 		// First, get an instance of the SensorManager
 	    _mySensorManager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
@@ -57,9 +59,9 @@ public class SensorsGraffitiLocationParametersGeneretor implements GraffitiLocat
 	        public void onSensorChanged(SensorEvent event) {
 	        	//GraffitiLocationParametersGeneratorFactory.setGraffitiLocationOrientation(event.values[0]);
 	        	_graffitiLocationParameters.setOrientation(new Orientation(event.values));
-	        	Log.d("SensorGenerator", "Orientation changed: x:" + event.values[0] +
+	        	/*Log.d("SensorGenerator", "Orientation changed: x:" + event.values[0] +
 	        						", y:" + event.values[1] +
-	        						", z:" + event.values[2]);
+	        						", z:" + event.values[2]);*/
 	        }
 	    };
 	    // Finally, register the listener
