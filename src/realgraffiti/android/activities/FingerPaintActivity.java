@@ -1,5 +1,13 @@
 package realgraffiti.android.activities;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.StreamCorruptedException;
+
 import realgraffiti.android.R;
 import realgraffiti.android.paint.ColorPickerDialog;
 import realgraffiti.android.paint.GraphicsActivity;
@@ -28,10 +36,15 @@ import android.view.View;
 
 public class FingerPaintActivity extends GraphicsActivity
 implements ColorPickerDialog.OnColorChangedListener {
+	protected static final String WALL_IMAGE_LOC = "Location of wall image";
+	protected static final String PAINTING_LOC = "tmp_paint";
+
+	private String bg_loc;
 	/** Called when the activity is first created. */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		bg_loc = getIntent().getStringExtra(WALL_IMAGE_LOC);
 		myView = new MyView(this);
 		Object retained = this.getLastNonConfigurationInstance();
 		setContentView(myView);
@@ -68,7 +81,7 @@ implements ColorPickerDialog.OnColorChangedListener {
 	public Object onRetainNonConfigurationInstance() {
 		return new MyDataObject(myView.mBitmap, myView.mCanvas, myView.mPath, myView.mBitmapPaint);
 	}
-	
+
 	public class MyView extends View {
 
 		private Bitmap  mBitmap;
@@ -78,6 +91,7 @@ implements ColorPickerDialog.OnColorChangedListener {
 
 		public MyView(Context c) {
 			super(c);
+			Bitmap tmpBitmap;
 			Display display = getWindowManager().getDefaultDisplay();
 
 			//Lock screen orientation on landscape
@@ -87,7 +101,16 @@ implements ColorPickerDialog.OnColorChangedListener {
 			Log.d("MyView", "Display width: " + display_width + ", height: " + display_height);        
 			//mBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 
-			Bitmap tmpBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.wall);
+			
+			String filename = getIntent().getStringExtra(WALL_IMAGE_LOC);
+			if (filename != null) {//Background should be taken from given file
+				tmpBitmap = BitmapFactory.decodeFile(filename).copy(Bitmap.Config.ARGB_8888, true);
+				Log.d("FingerPaint", "filename is not null: " + filename);
+			}
+			else {//Background will be taken from a default file
+				tmpBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.wall);
+			}
+			
 			int bitmap_height = tmpBitmap.getHeight();
 			int bitmap_width= tmpBitmap.getWidth();
 			Log.d("MyView", "Bitmap width: " + bitmap_width + ", height: " + bitmap_height);
@@ -104,7 +127,7 @@ implements ColorPickerDialog.OnColorChangedListener {
 			mPath = new Path();
 			mBitmapPaint = new Paint(Paint.DITHER_FLAG);
 		}
-		
+
 		@Override
 		protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 			super.onSizeChanged(w, h, oldw, oldh);
@@ -148,7 +171,7 @@ implements ColorPickerDialog.OnColorChangedListener {
 			mPath.reset();
 			//finishPaint();//Not belong to here, for development only
 		}
-		
+
 		@Override
 		public boolean onTouchEvent(MotionEvent event) {
 			float x = event.getX();
@@ -247,12 +270,59 @@ implements ColorPickerDialog.OnColorChangedListener {
 	}
 	public void finishPaint(){
 		//First save the image somewhere
-		
+		String filename = savePainting();
 		//Then finish, and set the image location
 		Intent resultIntent = new Intent();
-		resultIntent.putExtra("paint", "text to be add");
+		resultIntent.putExtra(PAINTING_LOC, filename);
 		setResult(Activity.RESULT_OK, resultIntent);
 		finish();
+	}
+	private String savePainting() {
+		//FileOutputStream fos;
+		Long timestamp = System.currentTimeMillis();
+		String filename =getFilesDir()+ "paint" + timestamp.toString();
+		Log.d("FingerPaint", "filename: " + filename);
+		try {
+			/*fos = openFileOutput(filename, MODE_PRIVATE);
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			oos.writeObject(myView.mBitmap); 
+			oos.close();
+			fos.close();*/
+			FileOutputStream fos = new FileOutputStream(filename);
+			myView.mBitmap.compress(Bitmap.CompressFormat.PNG, 90, fos);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			Log.d("FingerPaint", "file not found exception, "+ e.getMessage() + ", " + e.toString());
+			return null;
+		} catch (IOException e) {
+			e.printStackTrace();
+			Log.d("FingerPaint", "Exception " + e.getMessage() + ", " + e.toString());
+			return null;
+		}
+		Log.d("FingerPaint", "Filename: " + filename);
+		return filename;
+	}
+	private Object readBack(String filename){
+		Bitmap f = null;
+		FileInputStream fis;
+		try {
+			//fis = new FileInputStream(filename);
+			//BitmapFactory.decodeFile(filename);
+			fis = openFileInput(filename);
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			f = (Bitmap)ois.readObject();
+			ois.close();
+			fis.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (StreamCorruptedException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return f;
 	}
 	public class MyDataObject {
 		private Bitmap _bitmap;

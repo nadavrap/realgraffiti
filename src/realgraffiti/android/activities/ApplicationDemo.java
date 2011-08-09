@@ -31,6 +31,7 @@ public class ApplicationDemo extends MapActivity {
 	protected static final CharSequence NO_LOCATION_AVAILIBLE_MESSAGE = "Location not avilible";
 	protected static final int FINGER_PAINT_ACTIVITY = 0;
 	private RealGraffitiData _graffitiData;
+	private String backgroundLocation = null;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -108,7 +109,9 @@ public class ApplicationDemo extends MapActivity {
 					noLocationAvailibleToast.show();
 				} else{
 					Intent myIntent = new Intent(ApplicationDemo.this, FingerPaintActivity.class);
-					//ApplicationDemo.this.startActivity(myIntent);
+					//TODO
+					//Need to change the 'Location' to the real location of the image
+					myIntent.putExtra(FingerPaintActivity.WALL_IMAGE_LOC, backgroundLocation);
 					startActivityForResult(myIntent, FINGER_PAINT_ACTIVITY);
 
 					GraffitiLocationParameters	glp = graffitiLocationParametersGenerator.getCurrentLocationParameters();
@@ -125,8 +128,12 @@ public class ApplicationDemo extends MapActivity {
 		switch(requestCode) { 
 			case (FINGER_PAINT_ACTIVITY) : {
 				if (resultCode == RESULT_OK) {
-					String newText = data.getStringExtra("paint");
+					String newText = data.getStringExtra(FingerPaintActivity.PAINTING_LOC);
 					Log.d("Add new Button", "Returned from FingerPaint: Result OK, " + newText);
+					backgroundLocation = newText;
+					//ApplicationDemo.this.getCurrentFocus().setBackgroundColor(111111);
+					//setContentView();
+					//setBackgroundColor(111111);
 				}
 				else {
 					//When the user pressed 'Back', or other error
