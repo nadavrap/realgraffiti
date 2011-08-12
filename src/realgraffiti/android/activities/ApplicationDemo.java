@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -28,6 +29,14 @@ import com.google.android.maps.MapActivity;
 
 
 public class ApplicationDemo extends MapActivity {
+
+	public static final int     VIEW_MODE_RGBA     = 0;
+    public static final int     VIEW_MODE_MATCHING = 1;
+
+    public static int           viewMode        = VIEW_MODE_RGBA;
+    public static boolean		mResetRef		= false;
+
+	
 	protected static final CharSequence NO_LOCATION_AVAILIBLE_MESSAGE = "Location not avilible";
 	protected static final int FINGER_PAINT_ACTIVITY = 0;
 	private RealGraffitiData _graffitiData;
@@ -38,16 +47,18 @@ public class ApplicationDemo extends MapActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.d("realgraffiti life cycle", "on craete");
-		setContentView(R.layout.application_demo);
+//		setContentView(R.layout.application_demo);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setContentView(new CameraLiveView(this));
 
 		//_graffitiData = new RealGraffitiDataProxy(this);
 		_graffitiData = new RealGraffitiLocalData();
 
-		GraffitiMiniMapView miniMapView = (GraffitiMiniMapView)findViewById(R.id.demo_mini_map);
-		miniMapView.setRealGraffitiData(_graffitiData);
+//		GraffitiMiniMapView miniMapView = (GraffitiMiniMapView)findViewById(R.id.demo_mini_map);
+// EITAN		miniMapView.setRealGraffitiData(_graffitiData);
 
-		setAddNewGraffitiButton();       
-		setGetNearByGraffitiButton();
+// EITAN		setAddNewGraffitiButton();       
+// EITAN		setGetNearByGraffitiButton();
 
 		Log.d("ApplicationDemo","onCreate");
 		GraffitiLocationParametersGenerator graffitiLocationParametersGenerator = GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator(ApplicationDemo.this);
@@ -56,8 +67,8 @@ public class ApplicationDemo extends MapActivity {
 	protected void onStart(){
 		super.onStart();
 		Log.d("realgraffiti life cycle", "on start");
-		GraffitiMiniMapView miniMapView = (GraffitiMiniMapView)findViewById(R.id.demo_mini_map);
-		miniMapView.startOverlays();
+// EITAN		GraffitiMiniMapView miniMapView = (GraffitiMiniMapView)findViewById(R.id.demo_mini_map);
+// EITAN		miniMapView.startOverlays();
 	}
 
 	protected void onRestart(){super.onRestart(); Log.d("realgraffiti life cycle", "on restart");}
@@ -70,8 +81,8 @@ public class ApplicationDemo extends MapActivity {
 	protected void onPause() {
 		super.onPause();
 		Log.d("realgraffiti life cycle", "on pouse");
-		GraffitiMiniMapView miniMapView = (GraffitiMiniMapView)findViewById(R.id.demo_mini_map);
-		miniMapView.stopOverlays();
+// EITAN		GraffitiMiniMapView miniMapView = (GraffitiMiniMapView)findViewById(R.id.demo_mini_map);
+// EITAN		miniMapView.stopOverlays();
 	}
 
 	@Override
@@ -142,7 +153,7 @@ public class ApplicationDemo extends MapActivity {
 			}
 		}	
 	}
-	@Override
+@Override
 	protected boolean isRouteDisplayed() {
 		// TODO Auto-generated method stub
 		return false;

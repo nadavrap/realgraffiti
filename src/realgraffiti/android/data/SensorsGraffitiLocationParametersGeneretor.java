@@ -44,7 +44,7 @@ public class SensorsGraffitiLocationParametersGeneretor implements GraffitiLocat
 		//Get location from last known one
 		Location loc = _myLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 		if(loc != null) {
-			_graffitiLocationParameters.setCoordinates(new Coordinates(loc.getLatitude(), loc.getLongitude()));
+			_graffitiLocationParameters.setCoordinates(new Coordinates((int)loc.getLatitude(), (int)loc.getLongitude()));
 		}
 		
 		// First, get an instance of the SensorManager
