@@ -23,17 +23,9 @@
         </activity>
          <activity android:name=".activities.GraffitisLocationsMap"
                   android:label="@string/mapview_name">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 		<activity android:name="activities.RadarMapTest"
                   android:label="radar map test">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".activities.FingerPaintActivity"
                   android:label="@string/paint_act">
