@@ -35,7 +35,12 @@ public class CameraLiveView extends CameraLiveViewBase implements OnTouchListene
     @Override
     public void surfaceChanged(SurfaceHolder _holder, int format, int width, int height) {
         super.surfaceChanged(_holder, format, width, height);
-
+        
+        // Read the warp image and resize it to the frame size
+        mWarpImg=Highgui.imread("/mnt/sdcard/download/imgtrans.jpg");
+        if(!mWarpImg.empty())
+        	Imgproc.resize(mWarpImg, mWarpImg, new Size(getFrameWidth(), getFrameHeight()));
+        
         synchronized (this) {
             // initialize Mats before usage
             mYuv = new Mat(getFrameHeight() + getFrameHeight() / 2, getFrameWidth(), CvType.CV_8UC1);
@@ -46,9 +51,6 @@ public class CameraLiveView extends CameraLiveViewBase implements OnTouchListene
             mRgb2 = new Mat();
             mH = new Mat();
 
-            // Read the warp image and resize it to the frame size
-            mWarpImg=Highgui.imread("/mnt/sdcard/download/imgtrans.jpg");
-            Imgproc.resize(mWarpImg, mWarpImg, new Size(getFrameWidth(), getFrameHeight()));
         }
     }
 

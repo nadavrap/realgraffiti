@@ -1,5 +1,6 @@
 package realgraffiti.android.activities;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
@@ -7,7 +8,6 @@ import realgraffiti.android.R;
 import realgraffiti.android.data.GraffitiLocationParametersGenerator;
 import realgraffiti.android.data.GraffitiLocationParametersGeneratorFactory;
 import realgraffiti.android.data.RealGraffitiLocalData;
-import realgraffiti.android.maps.GraffitiMiniMapView;
 import realgraffiti.common.data.RealGraffitiData;
 import realgraffiti.common.dataObjects.Coordinates;
 import realgraffiti.common.dataObjects.Graffiti;
@@ -47,6 +47,7 @@ public class ApplicationDemo extends MapActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.d("realgraffiti life cycle", "on craete");
+		
 //		setContentView(R.layout.application_demo);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(new CameraLiveView(this));
