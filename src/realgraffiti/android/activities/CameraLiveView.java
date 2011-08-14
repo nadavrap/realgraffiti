@@ -7,17 +7,17 @@ import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
-import org.opencv.highgui.Highgui;
 import org.opencv.imgproc.Imgproc;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.View.OnTouchListener;
 
-public class CameraLiveView extends CameraLiveViewBase implements OnTouchListener{
+public class CameraLiveView extends CameraLiveViewBase{
     private Mat mYuv;
     private Mat mRgba;
     private Mat mRgb;
@@ -29,17 +29,23 @@ public class CameraLiveView extends CameraLiveViewBase implements OnTouchListene
 
     public CameraLiveView(Context context) {
         super(context);
-        setOnTouchListener(this);
+//        setOnTouchListener(this);
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder _holder, int format, int width, int height) {
         super.surfaceChanged(_holder, format, width, height);
-        
-        // Read the warp image and resize it to the frame size
-        mWarpImg=Highgui.imread("/mnt/sdcard/download/imgtrans.jpg");
+
+        // Copy the resource bitmap and convert to ARGB_8888 format, required by BitmapToMat
+        Bitmap tmpBitmap = ApplicationDemo.graffitiBitMap.copy(Bitmap.Config.ARGB_8888, true);
+        // Convert to OpenCV Mat object and resize
+        mWarpImg=android.BitmapToMat(tmpBitmap);
         if(!mWarpImg.empty())
+        {
         	Imgproc.resize(mWarpImg, mWarpImg, new Size(getFrameWidth(), getFrameHeight()));
+            Imgproc.cvtColor(mWarpImg, mWarpImg, Imgproc.COLOR_RGBA2RGB, 0);
+        }
+        tmpBitmap.recycle();
         
         synchronized (this) {
             // initialize Mats before usage
@@ -61,7 +67,7 @@ public class CameraLiveView extends CameraLiveViewBase implements OnTouchListene
         switch (ApplicationDemo.viewMode) {
          case ApplicationDemo.VIEW_MODE_RGBA:
             Imgproc.cvtColor(mYuv, mRgba, Imgproc.COLOR_YUV420i2RGB, 4);
-            Core.putText(mRgba, "RealGraffitiAR1. Press Menu.", new Point(10, 100), 3/* CV_FONT_HERSHEY_COMPLEX */, 1, new Scalar(255, 0, 0, 255), 2);
+//            Core.putText(mRgba, "RealGraffitiAR1. Press Menu.", new Point(10, 100), 3/* CV_FONT_HERSHEY_COMPLEX */, 1, new Scalar(255, 0, 0, 255), 2);
             break;
         case ApplicationDemo.VIEW_MODE_MATCHING:
             // Reference reset or first time run
@@ -91,11 +97,11 @@ public class CameraLiveView extends CameraLiveViewBase implements OnTouchListene
         return null;
     }
 
-    public boolean onTouch(View v, MotionEvent event) {
-    	mReref = true;
-    	ApplicationDemo.viewMode = ApplicationDemo.VIEW_MODE_MATCHING;
-        return false;
-    }    
+//    public boolean onTouch(View v, MotionEvent event) {
+//    	mReref = true;
+//    	ApplicationDemo.viewMode = ApplicationDemo.VIEW_MODE_MATCHING;
+//        return false;
+//    }    
     
     
     @Override
@@ -121,6 +127,15 @@ public class CameraLiveView extends CameraLiveViewBase implements OnTouchListene
         }
     }
     
+    public Bitmap getLastCameraFrame()
+    {
+        Bitmap bmp = Bitmap.createBitmap(getFrameWidth(), getFrameHeight(), Bitmap.Config.ARGB_8888);
+        
+        if (android.MatToBitmap(mRgba, bmp))
+            return bmp;
+        else
+        	return null;
+    }
     
     public native void ProcessRefFrame(long matAddrSrc); 
     public native void MatchAndWarp(long matAddrImg, long matAddrImgBW, long matAddrWarpImg, long matAddrDst);

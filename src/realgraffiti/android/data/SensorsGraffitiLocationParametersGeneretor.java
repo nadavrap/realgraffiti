@@ -22,6 +22,61 @@ public class SensorsGraffitiLocationParametersGeneretor implements GraffitiLocat
 	private boolean isLocationParametersAvailable = false;
 	private SensorEventListener _magnetlistener;
 	private SensorManager _mySensorManager;
+	private static final int TWO_MINUTES = 1000 * 60 * 2;
+
+    /** Determines whether one Location reading is better than the current Location fix
+     * @param location  The new Location that you want to evaluate
+     * @param currentBestLocation  The current Location fix, to which you want to compare the new one
+     */
+   protected boolean isBetterLocation(Location location, Location currentBestLocation) {
+       if (currentBestLocation == null) {
+           // A new location is always better than no location
+           return true;
+       }
+
+       // Check whether the new location fix is newer or older
+       long timeDelta = location.getTime() - currentBestLocation.getTime();
+       boolean isSignificantlyNewer = timeDelta > TWO_MINUTES;
+       boolean isSignificantlyOlder = timeDelta < -TWO_MINUTES;
+       boolean isNewer = timeDelta > 0;
+
+       // If it's been more than two minutes since the current location, use the new location
+       // because the user has likely moved
+       if (isSignificantlyNewer) {
+           return true;
+       // If the new location is more than two minutes older, it must be worse
+       } else if (isSignificantlyOlder) {
+           return false;
+       }
+
+       // Check whether the new location fix is more or less accurate
+       int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
+       boolean isLessAccurate = accuracyDelta > 0;
+       boolean isMoreAccurate = accuracyDelta < 0;
+       boolean isSignificantlyLessAccurate = accuracyDelta > 200;
+
+       // Check if the old and new location are from the same provider
+       boolean isFromSameProvider = isSameProvider(location.getProvider(),
+               currentBestLocation.getProvider());
+
+       // Determine location quality using a combination of timeliness and accuracy
+       if (isMoreAccurate) {
+           return true;
+       } else if (isNewer && !isLessAccurate) {
+           return true;
+       } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
+           return true;
+       }
+       return false;
+   }
+   /** Checks whether two providers are the same */
+   private boolean isSameProvider(String provider1, String provider2) {
+       if (provider1 == null) {
+         return provider2 == null;
+       }
+       return provider1.equals(provider2);
+   }
+	
 	
 	public SensorsGraffitiLocationParametersGeneretor(Context context) {
 		startListening(context);
@@ -41,8 +96,16 @@ public class SensorsGraffitiLocationParametersGeneretor implements GraffitiLocat
 		_myLocationListener = new MyLocationListener();
 		_myLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,_myLocationListener);
 		
-		//Get location from last known one
-		Location loc = _myLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		//Eitan - Get last known GPS and Network locations and use the better one
+		Location gpsloc = _myLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+  	  	Location netloc = _myLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+  	  	Location loc;
+
+  	  	if (isBetterLocation(netloc, gpsloc))
+  	  		loc = netloc;
+  	  	else
+  	  		loc = gpsloc;
+  	  	
 		if(loc != null) {
 			_graffitiLocationParameters.setCoordinates(new Coordinates((int)loc.getLatitude(), (int)loc.getLongitude()));
 		}

@@ -33,6 +33,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 
 public class FingerPaintActivity extends GraphicsActivity
 implements ColorPickerDialog.OnColorChangedListener {
@@ -40,10 +42,19 @@ implements ColorPickerDialog.OnColorChangedListener {
 	protected static final String PAINTING_LOC = "tmp_paint";
 
 	private String bg_loc;
+	
+	public void setFullscreen() {
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+	}
+	
 	/** Called when the activity is first created. */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		setFullscreen();
 		bg_loc = getIntent().getStringExtra(WALL_IMAGE_LOC);
 		myView = new MyView(this);
 		Object retained = this.getLastNonConfigurationInstance();

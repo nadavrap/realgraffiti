@@ -1,28 +1,31 @@
 package realgraffiti.android.activities;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.List;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 
 import realgraffiti.android.R;
 import realgraffiti.android.data.GraffitiLocationParametersGenerator;
 import realgraffiti.android.data.GraffitiLocationParametersGeneratorFactory;
 import realgraffiti.android.data.RealGraffitiLocalData;
+import realgraffiti.android.maps.GraffitiMiniMapView;
 import realgraffiti.common.data.RealGraffitiData;
-import realgraffiti.common.dataObjects.Coordinates;
 import realgraffiti.common.dataObjects.Graffiti;
 import realgraffiti.common.dataObjects.GraffitiLocationParameters;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
-import android.widget.ArrayAdapter;
+import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.maps.MapActivity;
@@ -35,31 +38,70 @@ public class ApplicationDemo extends MapActivity {
 
     public static int           viewMode        = VIEW_MODE_RGBA;
     public static boolean		mResetRef		= false;
+    
+    public static Bitmap		graffitiBitMap;
 
 	
 	protected static final CharSequence NO_LOCATION_AVAILIBLE_MESSAGE = "Location not avilible";
 	protected static final int FINGER_PAINT_ACTIVITY = 0;
 	private RealGraffitiData _graffitiData;
 	private String backgroundLocation = null;
+	private CameraLiveView _cameraLiveView;
 
+
+	/**
+	 * Avoid that the screen get's turned off by the system.
+	 */
+	public void disableScreenTurnOff() {
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
+				WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+	}
+
+	/**
+	 * Set's the orientation to landscape, as this is needed by AndAR.
+	 */
+	public void setOrientation() {
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+	}
+
+	/**
+	 * Maximize the application.
+	 */
+	public void setFullscreen() {
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+	}
+
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.d("realgraffiti life cycle", "on craete");
 		
-//		setContentView(R.layout.application_demo);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(new CameraLiveView(this));
+		// Load the default graffiti image
+		graffitiBitMap = BitmapFactory.decodeResource(getResources(),R.drawable.graffiti);
+		
+		setOrientation();
+		setFullscreen();
+		disableScreenTurnOff();
+		
+		LayoutInflater inflater = getLayoutInflater();
+		View tmpView;
+		tmpView = inflater.inflate(R.layout.application_demo, null);
+		_cameraLiveView = new CameraLiveView(this); 
+		addContentView(_cameraLiveView, new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT));
+		addContentView(tmpView, new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
 
 		//_graffitiData = new RealGraffitiDataProxy(this);
 		_graffitiData = new RealGraffitiLocalData();
 
-//		GraffitiMiniMapView miniMapView = (GraffitiMiniMapView)findViewById(R.id.demo_mini_map);
-// EITAN		miniMapView.setRealGraffitiData(_graffitiData);
+		GraffitiMiniMapView miniMapView = (GraffitiMiniMapView)findViewById(R.id.demo_mini_map);
+		miniMapView.setRealGraffitiData(_graffitiData);
 
-// EITAN		setAddNewGraffitiButton();       
-// EITAN		setGetNearByGraffitiButton();
+		setAddNewGraffitiButton();       
+		setGetNearByGraffitiButton();
 
 		Log.d("ApplicationDemo","onCreate");
 		GraffitiLocationParametersGenerator graffitiLocationParametersGenerator = GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator(ApplicationDemo.this);
@@ -68,8 +110,8 @@ public class ApplicationDemo extends MapActivity {
 	protected void onStart(){
 		super.onStart();
 		Log.d("realgraffiti life cycle", "on start");
-// EITAN		GraffitiMiniMapView miniMapView = (GraffitiMiniMapView)findViewById(R.id.demo_mini_map);
-// EITAN		miniMapView.startOverlays();
+		GraffitiMiniMapView miniMapView = (GraffitiMiniMapView)findViewById(R.id.demo_mini_map);
+		miniMapView.startOverlays();
 	}
 
 	protected void onRestart(){super.onRestart(); Log.d("realgraffiti life cycle", "on restart");}
@@ -82,8 +124,8 @@ public class ApplicationDemo extends MapActivity {
 	protected void onPause() {
 		super.onPause();
 		Log.d("realgraffiti life cycle", "on pouse");
-// EITAN		GraffitiMiniMapView miniMapView = (GraffitiMiniMapView)findViewById(R.id.demo_mini_map);
-// EITAN		miniMapView.stopOverlays();
+		GraffitiMiniMapView miniMapView = (GraffitiMiniMapView)findViewById(R.id.demo_mini_map);
+		miniMapView.stopOverlays();
 	}
 
 	@Override
@@ -94,7 +136,7 @@ public class ApplicationDemo extends MapActivity {
 	}
 
 	private void setGetNearByGraffitiButton() {
-		Button button = (Button)findViewById(R.id.getButton);
+/*		Button button = (Button)findViewById(R.id.getButton);
 		button.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
@@ -103,7 +145,7 @@ public class ApplicationDemo extends MapActivity {
 				ListView listView = (ListView)findViewById(R.id.listView1);
 				listView.setAdapter(new ArrayAdapter<Graffiti>(ApplicationDemo.this, android.R.layout.test_list_item, (List<Graffiti>)graffiities ));
 			}
-		});
+		}); */
 	}
 
 	private void setAddNewGraffitiButton() {
@@ -116,14 +158,28 @@ public class ApplicationDemo extends MapActivity {
 				GraffitiLocationParametersGenerator graffitiLocationParametersGenerator = GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator(ApplicationDemo.this);
 
 
-				if(graffitiLocationParametersGenerator.isLocationParametersAvailable() == false){
+				if(false){
+// EITAN - DEBUG	if(graffitiLocationParametersGenerator.isLocationParametersAvailable() == false){
 					Toast noLocationAvailibleToast = Toast.makeText(getApplicationContext(), NO_LOCATION_AVAILIBLE_MESSAGE, 1000);
 					noLocationAvailibleToast.show();
 				} else{
+					
+					Bitmap graffitiWallImg = _cameraLiveView.getLastCameraFrame();
+					String filename =getFilesDir()+ "/wall";
+					FileOutputStream fos = null;
+					try {
+						fos = new FileOutputStream(filename);
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					graffitiWallImg.compress(Bitmap.CompressFormat.PNG, 90, fos);
+					
+					
 					Intent myIntent = new Intent(ApplicationDemo.this, FingerPaintActivity.class);
 					//TODO
 					//Need to change the 'Location' to the real location of the image
-					myIntent.putExtra(FingerPaintActivity.WALL_IMAGE_LOC, backgroundLocation);
+					myIntent.putExtra(FingerPaintActivity.WALL_IMAGE_LOC, filename);
 					startActivityForResult(myIntent, FINGER_PAINT_ACTIVITY);
 
 					GraffitiLocationParameters	glp = graffitiLocationParametersGenerator.getCurrentLocationParameters();
@@ -143,6 +199,13 @@ public class ApplicationDemo extends MapActivity {
 					String newText = data.getStringExtra(FingerPaintActivity.PAINTING_LOC);
 					Log.d("Add new Button", "Returned from FingerPaint: Result OK, " + newText);
 					backgroundLocation = newText;
+					if (backgroundLocation != null) //Background should be taken from given file
+					{
+						graffitiBitMap = BitmapFactory.decodeFile(backgroundLocation).copy(Bitmap.Config.ARGB_8888, true);
+						viewMode = VIEW_MODE_MATCHING;
+						mResetRef = true;
+					}
+
 					//ApplicationDemo.this.getCurrentFocus().setBackgroundColor(111111);
 					//setContentView();
 					//setBackgroundColor(111111);
