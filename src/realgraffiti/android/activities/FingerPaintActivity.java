@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 
 import realgraffiti.android.R;
@@ -19,6 +18,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.EmbossMaskFilter;
 import android.graphics.MaskFilter;
 import android.graphics.Matrix;
@@ -26,6 +26,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
@@ -96,6 +97,8 @@ implements ColorPickerDialog.OnColorChangedListener {
 	public class MyView extends View {
 
 		private Bitmap  mBitmap;
+		private Bitmap  mBackBitmap;
+		private BitmapDrawable mBackBitmapDrawable;
 		private Canvas  mCanvas;
 		private Path    mPath;
 		private Paint   mBitmapPaint;
@@ -133,7 +136,13 @@ implements ColorPickerDialog.OnColorChangedListener {
 			float scale = Math.max(scaleW, scaleH);
 			//Log.d("MyView", "Swidth: " + scaleW + ", Sheight: " + scaleH + ", scale: " + scale);
 			aMatrix.postScale(scale, scale);
-			mBitmap = Bitmap.createBitmap(tmpBitmap, 0, 0, tmpBitmap.getWidth(), tmpBitmap.getHeight(), aMatrix, false);
+			// Create the background bitmap and convert it to a drawable object
+			mBackBitmap = Bitmap.createBitmap(tmpBitmap, 0, 0, tmpBitmap.getWidth(), tmpBitmap.getHeight(), aMatrix, false);
+			mBackBitmapDrawable = new BitmapDrawable(mBackBitmap);
+			// Set the drawable object as the background
+			setBackgroundDrawable(mBackBitmapDrawable);
+			// Create an empty bitmap for the canvas
+			mBitmap = Bitmap.createBitmap(tmpBitmap.getWidth(), tmpBitmap.getHeight(), Bitmap.Config.ARGB_8888);
 			mCanvas = new Canvas(mBitmap);
 			mPath = new Path();
 			mBitmapPaint = new Paint(Paint.DITHER_FLAG);
@@ -147,13 +156,11 @@ implements ColorPickerDialog.OnColorChangedListener {
 		@Override
 		protected void onDraw(Canvas canvas) {
 			//Log.d("MyView", "onDraw");
-			canvas.drawColor(0xFF0AA0AA);//Background color of the Canvas
-			//Bitmap icon = BitmapFactory.decodeResource(getResources(),R.drawable.wall);
+			// Use transparent background
+			canvas.drawColor(Color.TRANSPARENT);
 			canvas.drawBitmap(mBitmap, 0, 0, mBitmapPaint);
-			//canvas.drawBitmap(icon, 0, 0, mBitmapPaint);
 
 			canvas.drawPath(mPath, mPaint);
-			//this.setBackgroundColor(0);
 		}
 
 		private float mX, mY;
@@ -272,6 +279,7 @@ implements ColorPickerDialog.OnColorChangedListener {
 			mPaint.setXfermode(new PorterDuffXfermode(
 					PorterDuff.Mode.SRC_ATOP));
 			mPaint.setAlpha(0x80);
+		
 			return true;
 		case SAVE_MENU_ID:
 			finishPaint();
