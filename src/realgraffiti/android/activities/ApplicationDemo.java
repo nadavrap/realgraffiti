@@ -116,7 +116,11 @@ public class ApplicationDemo extends MapActivity {
 
 	protected void onRestart(){super.onRestart(); Log.d("realgraffiti life cycle", "on restart");}
 
-	protected void onStop(){super.onStop(); Log.d("realgraffiti life cycle", "on stop");}
+	protected void onStop(){
+		super.onStop(); 
+		Log.d("realgraffiti life cycle", "on stop");
+		viewMode = VIEW_MODE_RGBA;
+		}
 
 	protected void onDestroy(){super.onDestroy(); Log.d("realgraffiti life cycle", "on distroy");}
 
