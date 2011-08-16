@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, Test!</string>
+    <string name="app_name">RealGraffiti</string>
+    <string name="mapview_name">Map view</string>
+    <string name="Location_act">Location_activitie</string>
+    <string name="paint_act">paint_activity</string>
+</resources>
