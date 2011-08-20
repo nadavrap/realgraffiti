@@ -1,4 +1,4 @@
-package realgraffiti.android.activities;
+package realgraffiti.android.camera;
 
 import org.opencv.android;
 import org.opencv.core.Core;
@@ -9,9 +9,13 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
+import realgraffiti.android.activities.ApplicationDemo;
+import realgraffiti.android.activities.RealGraffiti;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.View;
@@ -27,6 +31,10 @@ public class CameraLiveView extends CameraLiveViewBase{
     private Mat mWarpImg;
     private boolean mReref = true;
 
+    public CameraLiveView(Context context, AttributeSet attrs) {
+		super(context, attrs);
+	}  
+    
     public CameraLiveView(Context context) {
         super(context);
 //        setOnTouchListener(this);
@@ -37,7 +45,7 @@ public class CameraLiveView extends CameraLiveViewBase{
         super.surfaceChanged(_holder, format, width, height);
 
         // Copy the resource bitmap and convert to ARGB_8888 format, required by BitmapToMat
-        Bitmap tmpBitmap = ApplicationDemo.graffitiBitMap.copy(Bitmap.Config.ARGB_8888, true);
+        Bitmap tmpBitmap = RealGraffiti.graffitiBitMap.copy(Bitmap.Config.ARGB_8888, true);
         // Convert to OpenCV Mat object and resize
         mWarpImg=android.BitmapToMat(tmpBitmap);
         if(!mWarpImg.empty())

@@ -99,16 +99,20 @@ public class SensorsGraffitiLocationParametersGeneretor implements GraffitiLocat
 		//Eitan - Get last known GPS and Network locations and use the better one
 		Location gpsloc = _myLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
   	  	Location netloc = _myLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-  	  	Location loc;
-
-  	  	if (isBetterLocation(netloc, gpsloc))
-  	  		loc = netloc;
-  	  	else
-  	  		loc = gpsloc;
   	  	
-		if(loc != null) {
-			_graffitiLocationParameters.setCoordinates(new Coordinates((int)loc.getLatitude(), (int)loc.getLongitude()));
-		}
+  	  	if(netloc != null){
+	  	  	Location loc;
+	
+	  	  	if (isBetterLocation(netloc, gpsloc))
+	  	  		loc = netloc;
+	  	  	else
+	  	  		loc = gpsloc;
+	  	  	
+			if(loc != null) {
+				_graffitiLocationParameters.setCoordinates(new Coordinates((int)loc.getLatitude(), (int)loc.getLongitude()));
+				isLocationParametersAvailable = true;
+			}
+  	  	}
 		
 		// First, get an instance of the SensorManager
 	    _mySensorManager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
