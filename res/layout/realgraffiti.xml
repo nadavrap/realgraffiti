@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/realGraffitiMainLayout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    
+    <realgraffiti.android.camera.CameraLiveView
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_alignParentLeft="True"
+	android:layout_alignParentTop="True"
+	android:id="@+id/cameraLiveView"
+    />
+    
+   	<Button android:text="New Graffiti"
+ 	android:id="@+id/addNewGraffitiButton"
+	android:textSize="16sp" 
+	android:textColor="#FFFFFFFF"
+	android:layout_height="wrap_content"
+	android:layout_width="wrap_content"
+	android:background="#80808080" 
+	android:drawableTop="@drawable/paintnew2"
+	android:layout_alignParentLeft="True"
+	android:layout_alignParentBottom="True"
+	/>
+	<!-- Don't ask me why but this button makes the map appear over the camera view and not below it  -->
+	<Button 
+	android:textSize="16sp" 
+	android:textColor="#FFFFFFFF"
+	android:layout_height="120dp"
+	android:layout_width="120dp"
+	android:background="#80808080" 
+	android:layout_alignParentRight="True"
+	android:layout_alignParentBottom="True"
+	/>
+	
+	<realgraffiti.android.maps.GraffitiMiniMapView
+	android:layout_height="120dp"
+	android:layout_width="120dp"
+	android:id="@+id/miniMap" 
+	android:layout_alignParentRight="True"
+	android:layout_alignParentBottom="True"/>
+
+</RelativeLayout>

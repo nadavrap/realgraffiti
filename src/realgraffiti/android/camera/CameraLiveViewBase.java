@@ -1,4 +1,4 @@
-package realgraffiti.android.activities;
+package realgraffiti.android.camera;
 
 import java.util.List;
 
@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.hardware.Camera;
 import android.hardware.Camera.PreviewCallback;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -22,6 +23,13 @@ public abstract class CameraLiveViewBase extends SurfaceView implements SurfaceH
     private byte[]              mFrame;
     private boolean             mThreadRun;
 
+    public CameraLiveViewBase(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		 mHolder = getHolder();
+	     mHolder.addCallback(this);
+	     Log.i(TAG, "Instantiated new " + this.getClass());
+	}  
+    
     public CameraLiveViewBase(Context context) {
         super(context);
         mHolder = getHolder();

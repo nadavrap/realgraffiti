@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 import realgraffiti.android.R;
+import realgraffiti.android.camera.CameraLiveView;
 import realgraffiti.android.data.GraffitiLocationParametersGenerator;
 import realgraffiti.android.data.GraffitiLocationParametersGeneratorFactory;
 import realgraffiti.android.data.RealGraffitiLocalData;
@@ -153,7 +154,7 @@ public class ApplicationDemo extends MapActivity {
 	}
 
 	private void setAddNewGraffitiButton() {
-		Button button = (Button)findViewById(R.id.add_new_graffiti_button);
+		Button button = (Button)findViewById(R.id.demo_add_new_graffiti_button);
 		button.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
