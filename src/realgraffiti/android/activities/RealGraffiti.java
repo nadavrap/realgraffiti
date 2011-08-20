@@ -1,5 +1,7 @@
 package realgraffiti.android.activities;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
@@ -17,6 +19,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
 import android.os.AsyncTask;
@@ -48,7 +51,8 @@ public class RealGraffiti extends Activity {
     public static Bitmap graffitiBitMap;
 
 	private RealGraffitiData _graffitiData;
-	private String backgroundLocation = null;
+	private String _backgroundLocation = null;
+	private GraffitiLocationParameters _paintedGraffitiLocationParameters;
 	private CameraLiveView _cameraLiveView;
 	private GraffitiMiniMapView _miniMapView;
 
@@ -152,6 +156,8 @@ public class RealGraffiti extends Activity {
 					Toast noLocationAvailibleToast = Toast.makeText(getApplicationContext(), NO_LOCATION_AVAILIBLE_MESSAGE, 1000);
 					noLocationAvailibleToast.show();
 				} else{
+					_paintedGraffitiLocationParameters = graffitiLocationParametersGenerator.getCurrentLocationParameters();
+					
 					Bitmap graffitiWallImg = _cameraLiveView.getLastCameraFrame();
 					String filename =getFilesDir()+ "/wall";
 					FileOutputStream fos = null;
@@ -168,9 +174,7 @@ public class RealGraffiti extends Activity {
 					//Need to change the 'Location' to the real location of the image
 					myIntent.putExtra(FingerPaintActivity.WALL_IMAGE_LOC, filename);
 					startActivityForResult(myIntent, FINGER_PAINT_ACTIVITY);
-
-					GraffitiLocationParameters	glp = graffitiLocationParametersGenerator.getCurrentLocationParameters();
-
+					
 					Log.d("realgraffiti","New Button pressed");
 				}
 			}
@@ -183,17 +187,26 @@ public class RealGraffiti extends Activity {
 				if (resultCode == RESULT_OK) {
 					String newText = data.getStringExtra(FingerPaintActivity.PAINTING_LOC);
 					Log.d("Add new Button", "Returned from FingerPaint: Result OK, " + newText);
-					backgroundLocation = newText;
-					if (backgroundLocation != null) //Background should be taken from given file
+					
+					_backgroundLocation = newText;
+					
+					if (_backgroundLocation != null) //Background should be taken from given file
 					{
-						graffitiBitMap = BitmapFactory.decodeFile(backgroundLocation).copy(Bitmap.Config.ARGB_8888, true);
+						graffitiBitMap = BitmapFactory.decodeFile(_backgroundLocation).copy(Bitmap.Config.ARGB_8888, true);
 						viewMode = VIEW_MODE_MATCHING;
 						_resetRef = true;
 					}
-
-					//ApplicationDemo.this.getCurrentFocus().setBackgroundColor(111111);
-					//setContentView();
-					//setBackgroundColor(111111);
+					
+					ByteArrayOutputStream os = new ByteArrayOutputStream();
+					graffitiBitMap.compress(CompressFormat.PNG, 10, os);
+					//ByteArrayInputStream byteInputStream = new ByteArrayInputStream(imageData);
+					byte[] imageData = os.toByteArray();
+					
+					
+					AddNewGraffitiTask addGraffitiTask = new AddNewGraffitiTask();
+					Graffiti graffiti = new Graffiti(_paintedGraffitiLocationParameters, imageData);
+					_paintedGraffitiLocationParameters = null;
+					addGraffitiTask.execute(graffiti);
 				}
 				else {
 					//When the user pressed 'Back', or other error
@@ -206,10 +219,7 @@ public class RealGraffiti extends Activity {
 	private class AddNewGraffitiTask extends AsyncTask<Graffiti, Integer, Boolean> {
 		private ProgressDialog _progressDialog; 
 		protected Boolean doInBackground(Graffiti... graffiti) {
-			GraffitiLocationParameters glp = GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator(getApplicationContext()).getCurrentLocationParameters();
-
 			Log.d("ApplicationDemo","newTask");	
-
 			return _graffitiData.addNewGraffiti(graffiti[0]);
 		}
 
