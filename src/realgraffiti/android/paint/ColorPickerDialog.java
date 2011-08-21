@@ -195,13 +195,13 @@ public class ColorPickerDialog extends Dialog {
                     }
                     break;
                 case MotionEvent.ACTION_UP:
-                    if (mTrackingCenter) {
-                        if (inCenter) {
+                    //if (mTrackingCenter) {
+                        //if (inCenter) {
                             mListener.colorChanged(mCenterPaint.getColor());
-                        }
+                        //}
                         mTrackingCenter = false;    // so we draw w/o halo
                         invalidate();
-                    }
+                    //}
                     break;
             }
             return true;
