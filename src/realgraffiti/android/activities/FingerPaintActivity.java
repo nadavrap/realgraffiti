@@ -133,8 +133,8 @@ implements ColorPickerDialog.OnColorChangedListener {
 			//aMatrix.postRotate(90.f);
 			float scaleW = (float)display_width/bitmap_width;
 			float scaleH = (float)display_height/bitmap_height;
+			//Log.d("MyView", "Scaling width: "+ scaleW +  ", heigh: " + scaleH);
 			float scale = Math.max(scaleW, scaleH);
-			//Log.d("MyView", "Swidth: " + scaleW + ", Sheight: " + scaleH + ", scale: " + scale);
 			aMatrix.postScale(scale, scale);
 			// Create the background bitmap and convert it to a drawable object
 			mBackBitmap = Bitmap.createBitmap(tmpBitmap, 0, 0, tmpBitmap.getWidth(), tmpBitmap.getHeight(), aMatrix, false);
@@ -142,7 +142,7 @@ implements ColorPickerDialog.OnColorChangedListener {
 			// Set the drawable object as the background
 			setBackgroundDrawable(mBackBitmapDrawable);
 			// Create an empty bitmap for the canvas
-			mBitmap = Bitmap.createBitmap(tmpBitmap.getWidth(), tmpBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+			mBitmap = Bitmap.createBitmap(mBackBitmap.getWidth(), mBackBitmap.getHeight(), Bitmap.Config.ARGB_8888);
 			mCanvas = new Canvas(mBitmap);
 			mPath = new Path();
 			mBitmapPaint = new Paint(Paint.DITHER_FLAG);
