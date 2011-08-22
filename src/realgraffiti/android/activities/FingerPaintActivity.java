@@ -293,8 +293,10 @@ implements ColorPickerDialog.OnColorChangedListener {
 		case BLUR_MENU_ID:
 			if (mPaint.getMaskFilter() != mBlur) {
 				mPaint.setMaskFilter(mBlur);
+				mPaint.setStrokeWidth(20);
 			} else {
 				mPaint.setMaskFilter(null);
+				mPaint.setStrokeWidth(12);
 			}
 			return true;
 		case ERASE_MENU_ID:

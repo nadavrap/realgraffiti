@@ -49,6 +49,7 @@ public class RealGraffiti extends Activity {
     
     public static Bitmap graffitiBitMap;
     public static Bitmap spraycanBitmap;
+    public static Bitmap rgLogoBitmap;
 
 	private RealGraffitiData _graffitiData;
 	private String _backgroundLocation = null;
@@ -67,6 +68,7 @@ public class RealGraffiti extends Activity {
 		// Load the default graffiti image
 		graffitiBitMap = BitmapFactory.decodeResource(getResources(),R.drawable.graffiti);
 		spraycanBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.spraycanlarge);
+		rgLogoBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.rglogo);
 		
 		// Prepare some sound effects
 		soundPool = new SoundPool(4,AudioManager.STREAM_MUSIC,100);
