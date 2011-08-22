@@ -28,10 +28,11 @@ public class CameraLiveView extends CameraLiveViewBase{
     public static final int     VIEW_MODE_PAINTING 		= 3;
 	
     public static final int     MAX_BAD_MATHES_ALLOWED	= 5;
+    public static final long    LOGO_DISPLAY_PERIOD_MS	= 4000;
     
     private static int           mViewMode;
 	
-	private static long prevFTime = 0;
+	private static long prevFTime = 0, startTime;
 	private Mat mYuv;
     private Mat mRgba;
     private Mat mGraySubmat;
@@ -74,6 +75,7 @@ public class CameraLiveView extends CameraLiveViewBase{
         tmpBitmap.recycle();
         
         mWarpedGraffiti=Bitmap.createBitmap(getFrameWidth(), getFrameHeight(), Bitmap.Config.ARGB_8888);
+        startTime=SystemClock.uptimeMillis();
         
 		Log.d("CameraLiveView", "surface changed before synch");
         
@@ -161,7 +163,14 @@ public class CameraLiveView extends CameraLiveViewBase{
         
         if (android.MatToBitmap(mRgba, bmp))
         {
-          if( (mViewMode == VIEW_MODE_VIEWING) && mGoodTracking && mGoodMatch)
+          if((mViewMode == VIEW_MODE_IDLE) && (SystemClock.uptimeMillis()-startTime < LOGO_DISPLAY_PERIOD_MS) )
+          {
+           	Canvas canvas = new Canvas(bmp);
+           	Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
+           	canvas.drawBitmap(RealGraffiti.rgLogoBitmap, (getFrameWidth()-RealGraffiti.rgLogoBitmap.getWidth())/2
+          			, (getFrameHeight()-RealGraffiti.rgLogoBitmap.getHeight())/2, paint);
+          }
+          else if( (mViewMode == VIEW_MODE_VIEWING) && mGoodTracking && mGoodMatch)
           {
            	Canvas canvas = new Canvas(bmp);
           	Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
