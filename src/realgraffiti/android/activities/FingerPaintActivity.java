@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.StreamCorruptedException;
+import java.util.HashMap;
 
 import realgraffiti.android.R;
 import realgraffiti.android.paint.ColorPickerDialog;
@@ -27,6 +28,8 @@ import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.BitmapDrawable;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
@@ -41,8 +44,12 @@ public class FingerPaintActivity extends GraphicsActivity
 implements ColorPickerDialog.OnColorChangedListener {
 	protected static final String WALL_IMAGE_LOC = "Location of wall image";
 	protected static final String PAINTING_LOC = "tmp_paint";
+    private static final int		SOUND_ID_OPENCAN	= 1;
+    private static final int		SOUND_ID_SPRAY		= 2;
 
 	private String bg_loc;
+	private SoundPool soundPool;
+	private HashMap<Integer, Integer> soundPoolMap;
 	
 	public void setFullscreen() {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -74,20 +81,38 @@ implements ColorPickerDialog.OnColorChangedListener {
 		mPaint.setStrokeJoin(Paint.Join.ROUND);
 		mPaint.setStrokeCap(Paint.Cap.ROUND);
 		mPaint.setStrokeWidth(12);
+		mPaint.setAlpha(0xA0);
 
 		mEmboss = new EmbossMaskFilter(new float[] { 1, 1, 1 },
 				0.4f, 6, 3.5f);
 
 		mBlur = new BlurMaskFilter(8, BlurMaskFilter.Blur.NORMAL);
 
+		// Add some sound
+		soundPool = new SoundPool(4,AudioManager.STREAM_MUSIC,100);
+	    soundPoolMap = new HashMap<Integer, Integer>();
+	    soundPoolMap.put(SOUND_ID_OPENCAN, soundPool.load(this, R.raw.canopen, 1));
+	    soundPoolMap.put(SOUND_ID_SPRAY, soundPool.load(this, R.raw.spraying, 1));
+		
 	}
 	private MyView myView;
 	private Paint       mPaint;
 	private MaskFilter  mEmboss;
 	private MaskFilter  mBlur;
 
+	private void playSound(int soundID)
+	{
+	    AudioManager mgr = (AudioManager)this.getSystemService(Context.AUDIO_SERVICE);
+	    float streamVolumeCurrent = mgr.getStreamVolume(AudioManager.STREAM_MUSIC);
+	    float streamVolumeMax = mgr.getStreamMaxVolume(AudioManager.STREAM_MUSIC);    
+	    float volume = streamVolumeCurrent / streamVolumeMax;
+		soundPool.play(soundID, volume, volume, 1, 0, 1f);
+	}
+	
 	public void colorChanged(int color) {
 		mPaint.setColor(color);
+		mPaint.setAlpha(0xA0);
+		playSound(SOUND_ID_OPENCAN);
 	}
 	@Override
 	public Object onRetainNonConfigurationInstance() {
@@ -133,8 +158,8 @@ implements ColorPickerDialog.OnColorChangedListener {
 			//aMatrix.postRotate(90.f);
 			float scaleW = (float)display_width/bitmap_width;
 			float scaleH = (float)display_height/bitmap_height;
-			//Log.d("MyView", "Scaling width: "+ scaleW +  ", heigh: " + scaleH);
 			float scale = Math.max(scaleW, scaleH);
+			//Log.d("MyView", "Swidth: " + scaleW + ", Sheight: " + scaleH + ", scale: " + scale);
 			aMatrix.postScale(scale, scale);
 			// Create the background bitmap and convert it to a drawable object
 			mBackBitmap = Bitmap.createBitmap(tmpBitmap, 0, 0, tmpBitmap.getWidth(), tmpBitmap.getHeight(), aMatrix, false);
@@ -167,6 +192,7 @@ implements ColorPickerDialog.OnColorChangedListener {
 		private static final float TOUCH_TOLERANCE = 4;
 
 		private void touch_start(float x, float y) {
+			playSound(SOUND_ID_SPRAY);
 			mPath.reset();
 			mPath.moveTo(x, y);
 			mX = x;
@@ -225,10 +251,10 @@ implements ColorPickerDialog.OnColorChangedListener {
 		super.onCreateOptionsMenu(menu);
 
 		menu.add(0, COLOR_MENU_ID, 0, "Color").setShortcut('3', 'c');
-		menu.add(0, EMBOSS_MENU_ID, 0, "Emboss").setShortcut('4', 's');
+//		menu.add(0, EMBOSS_MENU_ID, 0, "Emboss").setShortcut('4', 's');
 		menu.add(0, BLUR_MENU_ID, 0, "Blur").setShortcut('5', 'z');
 		menu.add(0, ERASE_MENU_ID, 0, "Erase").setShortcut('5', 'z');
-		menu.add(0, SRCATOP_MENU_ID, 0, "SrcATop").setShortcut('5', 'z');
+//		menu.add(0, SRCATOP_MENU_ID, 0, "SrcATop").setShortcut('5', 'z');
 		menu.add(0, SAVE_MENU_ID, 0, "Save").setShortcut('5', 'z');
 
 		/****   Is this the mechanism to extend with filter effects?
@@ -251,7 +277,7 @@ implements ColorPickerDialog.OnColorChangedListener {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		mPaint.setXfermode(null);
-		mPaint.setAlpha(0xFF);
+//		mPaint.setAlpha(0xFF);
 
 		switch (item.getItemId()) {
 		case COLOR_MENU_ID:

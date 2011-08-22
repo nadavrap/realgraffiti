@@ -91,7 +91,9 @@ public class ApplicationDemo extends MapActivity {
 		LayoutInflater inflater = getLayoutInflater();
 		View tmpView;
 		tmpView = inflater.inflate(R.layout.application_demo, null);
-		_cameraLiveView = new CameraLiveView(this); 
+//		_cameraLiveView = new CameraLiveView(this);
+		_cameraLiveView = (CameraLiveView) findViewById(R.id.cameraLiveView);
+		
 		addContentView(_cameraLiveView, new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT));
 		addContentView(tmpView, new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
 
@@ -169,7 +171,7 @@ public class ApplicationDemo extends MapActivity {
 					noLocationAvailibleToast.show();
 				} else{
 					
-					Bitmap graffitiWallImg = _cameraLiveView.getLastCameraFrame();
+					Bitmap graffitiWallImg = _cameraLiveView.getBackgroundImage();
 					String filename =getFilesDir()+ "/wall";
 					FileOutputStream fos = null;
 					try {

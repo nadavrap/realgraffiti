@@ -15,6 +15,7 @@ import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.LinearLayout;
 
 public class GraffitisLocationsMap extends Activity {
@@ -25,6 +26,8 @@ public class GraffitisLocationsMap extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
+		Log.d("GraffitisLocationsMap", "on craete");
+
 	    setContentView(R.layout.mapview);
 	    
 	    MapView mapView = (MapView)findViewById(R.id.mapview);
@@ -41,6 +44,7 @@ public class GraffitisLocationsMap extends Activity {
 	    LocationManager locationManager = (LocationManager) this.getSystemService(this.LOCATION_SERVICE);
 	    _currentLocationOverlay = new CurrentLocationOverlay(currentLocationMarker, mapView,locationManager);
 	    mapView.getOverlays().add(_currentLocationOverlay);
+		Log.d("GraffitisLocationsMap", "on craete done");
 	}
 	
 	protected boolean isRouteDisplayed() {
@@ -51,6 +55,7 @@ public class GraffitisLocationsMap extends Activity {
 	@Override
 	protected void onStart(){
 		super.onStart();
+		Log.d("GraffitisLocationsMap", "on start");
 		_graffitiLocationsOverlay.startPollingForGraffities();
 		_currentLocationOverlay.startTrackingLocation();
 	}
@@ -58,6 +63,7 @@ public class GraffitisLocationsMap extends Activity {
 	@Override
 	protected void onPause(){
 		super.onPause();
+		Log.d("GraffitisLocationsMap", "on pause");
 		_graffitiLocationsOverlay.stopPollingForGraffities();
 		_currentLocationOverlay.stopTrackingLocation();
 	}
@@ -65,6 +71,7 @@ public class GraffitisLocationsMap extends Activity {
 	@Override
 	protected void onResume(){
 		super.onResume();
+		Log.d("GraffitisLocationsMap", "on resume");
 	}
 	
 	
