@@ -39,6 +39,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 public class FingerPaintActivity extends GraphicsActivity
 implements ColorPickerDialog.OnColorChangedListener {
@@ -87,7 +88,10 @@ implements ColorPickerDialog.OnColorChangedListener {
 				0.4f, 6, 3.5f);
 
 		mBlur = new BlurMaskFilter(8, BlurMaskFilter.Blur.NORMAL);
-
+		
+		//Add a Toast saying use the menu button
+		Toast.makeText(FingerPaintActivity.this, R.string.paint_open_message, Toast.LENGTH_LONG).show();
+		
 		// Add some sound
 		soundPool = new SoundPool(4,AudioManager.STREAM_MUSIC,100);
 	    soundPoolMap = new HashMap<Integer, Integer>();
