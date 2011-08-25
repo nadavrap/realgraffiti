@@ -44,6 +44,7 @@ public class GraffitiMiniMapView extends ViewGroup{
 	
     public GraffitiMiniMapView(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		if (isInEditMode()) {return;}
 		_context = context;
 		initView(context);
 	}  

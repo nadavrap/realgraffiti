@@ -98,7 +98,7 @@ public class ApplicationDemo extends MapActivity {
 		addContentView(tmpView, new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
 
 		//_graffitiData = new RealGraffitiDataProxy(this);
-		_graffitiData = new RealGraffitiLocalData();
+		_graffitiData = new RealGraffitiLocalData(this);
 
 		GraffitiMiniMapView miniMapView = (GraffitiMiniMapView)findViewById(R.id.demo_mini_map);
 		miniMapView.setRealGraffitiData(_graffitiData);
@@ -107,7 +107,8 @@ public class ApplicationDemo extends MapActivity {
 		setGetNearByGraffitiButton();
 
 		Log.d("ApplicationDemo","onCreate");
-		GraffitiLocationParametersGenerator graffitiLocationParametersGenerator = GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator(ApplicationDemo.this);
+		GraffitiLocationParametersGenerator graffitiLocationParametersGenerator = 
+			GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator(ApplicationDemo.this);
 	}
 
 	protected void onStart(){

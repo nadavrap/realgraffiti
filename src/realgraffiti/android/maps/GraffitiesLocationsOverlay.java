@@ -8,8 +8,8 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.ItemizedOverlay;
 import org.osmdroid.views.overlay.OverlayItem;
-import org.osmdroid.views.overlay.OverlayItem.HotspotPlace;
-import realgraffiti.android.R;
+//import org.osmdroid.views.overlay.OverlayItem.HotspotPlace;
+//import realgraffiti.android.R;
 import realgraffiti.android.web.GraffitiPollListener;
 import realgraffiti.android.web.GraffitiServerPoller;
 import realgraffiti.common.data.RealGraffitiData;
@@ -23,12 +23,9 @@ import android.util.Log;
 
 public class GraffitiesLocationsOverlay extends ItemizedOverlay<OverlayItem> {
 	private List<OverlayItem> _overlays = new ArrayList<OverlayItem>();
-	
 	private RealGraffitiData _realGraffitiData;
-	
 	private GraffitiServerPoller _graffitiServerPoller = null;
 	private MapView _mapView;
-
 	private Context _context;
 
 	private static final int DATA_POLLING_INTERVAL = 10000;
@@ -100,6 +97,8 @@ public class GraffitiesLocationsOverlay extends ItemizedOverlay<OverlayItem> {
 				Log.d("realgraffiti", "poll data of size: " + graffities.size());
 			}
 		});
+	    _graffitiServerPoller.beginPolling();
+	    Log.d("GraffitiesLocationOverlay", "Start Polling for Graffites");
 	}
 
 	@Override

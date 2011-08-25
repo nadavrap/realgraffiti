@@ -53,7 +53,8 @@ public class CameraLiveView extends CameraLiveViewBase{
     
 	public CameraLiveView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-        mViewMode = VIEW_MODE_IDLE;
+		if (isInEditMode()) {return;}
+		mViewMode = VIEW_MODE_IDLE;
 		Log.d("CameraLiveView", "on craete");
 	}  
     
