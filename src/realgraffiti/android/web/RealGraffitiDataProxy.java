@@ -5,7 +5,7 @@ import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
-import com.google.gson.FieldAttributes;
+//import com.google.gson.FieldAttributes;
 import com.google.gson.reflect.TypeToken;
 import android.content.Context;
 import android.util.Log;
@@ -24,6 +24,7 @@ public class RealGraffitiDataProxy implements RealGraffitiData{
 	
 	public RealGraffitiDataProxy(Context context){
 		_context = context;
+		Log.d("DataProxy","Created");
 	}
 	
 	@Override
@@ -61,18 +62,21 @@ public class RealGraffitiDataProxy implements RealGraffitiData{
 	@Override
 	public Collection<Graffiti> getNearByGraffiti(
 			GraffitiLocationParameters graffitiLocationParameters) {
+		Log.d("DataProxy","getNearByGraffiti" + " start");
 		String url = _context.getString(R.string.ServerPath);
 		url += "/" + _context.getString(R.string.RealGraffitiDataServlet);
-		
+		Log.d("DataProxy", "URL: " + url);
 		WebServiceClient client = new WebServiceClient(url);
 		String actionName = _context.getString(R.string.getNearByGraffiti);
 		client.addParam(ACTION_KEY, actionName);
 		client.addParam(ACTION_PARAMETER_KEY, graffitiLocationParameters);
-		
 		client.execute(WebServiceClient.RequestMethod.POST);
-	
+		Log.d("DataProxy","client Error: " + client.getErrorMessage());
+		Log.d("DataProxy","client responseCode: " + client.getResponseCode());
+		Log.d("DataProxy","client responseString: " + client.getResponseString());
 		Type collectionType = new TypeToken<ArrayList<Graffiti>>(){}.getType();
 		Collection<Graffiti> nearByGraffiti = (ArrayList<Graffiti>)client.getResponseObject(collectionType);
+		Log.d("DataProxy","getNearByGraffiti" + " end");
 		return nearByGraffiti;		
 	}
 	

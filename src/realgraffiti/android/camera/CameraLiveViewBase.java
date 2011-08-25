@@ -25,7 +25,8 @@ public abstract class CameraLiveViewBase extends SurfaceView implements SurfaceH
 
     public CameraLiveViewBase(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		 mHolder = getHolder();
+		if (isInEditMode()) {return;}
+		mHolder = getHolder();
 	     mHolder.addCallback(this);
 	     Log.i(TAG, "Instantiated new " + this.getClass());
 	}  

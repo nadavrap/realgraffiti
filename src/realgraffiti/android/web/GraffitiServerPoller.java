@@ -3,13 +3,14 @@ package realgraffiti.android.web;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import android.content.Context;
-import android.os.AsyncTask;
 import realgraffiti.android.data.GraffitiLocationParametersGenerator;
 import realgraffiti.android.data.GraffitiLocationParametersGeneratorFactory;
 import realgraffiti.common.data.RealGraffitiData;
 import realgraffiti.common.dataObjects.Graffiti;
 import realgraffiti.common.dataObjects.GraffitiLocationParameters;
+import android.content.Context;
+import android.os.AsyncTask;
+import android.util.Log;
 
 public class GraffitiServerPoller {
 	private RealGraffitiData _realGraffitiData;
@@ -48,7 +49,7 @@ public class GraffitiServerPoller {
 			 while(_running){
 				 GraffitiLocationParametersGenerator locationParametersGenerator = 
 					 GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator(_context);
-				 
+				Log.d("GraffitiPoll",  "Location Parameter Available (for GraffitiPoll): " + locationParametersGenerator.isLocationParametersAvailable());
 				if(locationParametersGenerator.isLocationParametersAvailable()){
 					GraffitiLocationParameters graffitiLocationParameters = locationParametersGenerator.getCurrentLocationParameters();
 					graffities = _realGraffitiData.getNearByGraffiti(graffitiLocationParameters);

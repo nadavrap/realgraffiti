@@ -41,7 +41,7 @@ public class RealGraffiti extends Activity {
 //    public static final int VIEW_MODE_MATCHING = 1;
     public static final int		SOUND_ID_SHUTTER	= 1;
 
-    protected static final CharSequence NO_LOCATION_AVAILIBLE_MESSAGE = "Location not avilible";
+    protected static final CharSequence NO_LOCATION_AVAILIBLE_MESSAGE = "Location not available";
 	protected static final int FINGER_PAINT_ACTIVITY = 0;
     
 //    public static int viewMode = VIEW_MODE_RGBA;
@@ -63,7 +63,7 @@ public class RealGraffiti extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.d("RealGraffiti", "on craete");
+		//Log.d("RealGraffiti", "on craete");
 		
 		// Load the default graffiti image
 		graffitiBitMap = BitmapFactory.decodeResource(getResources(),R.drawable.graffiti);
@@ -84,15 +84,16 @@ public class RealGraffiti extends Activity {
 		_cameraLiveView = (CameraLiveView) findViewById(R.id.cameraLiveView);
 		
 		//_graffitiData = new RealGraffitiDataProxy(this);
-		_graffitiData = new RealGraffitiLocalData();
+		_graffitiData = new RealGraffitiLocalData(this);
 
 		_miniMapView = (GraffitiMiniMapView)findViewById(R.id.miniMap);
 		_miniMapView.setRealGraffitiData(_graffitiData);
 
 		setAddNewGraffitiButton();
 		
-		GraffitiLocationParametersGenerator graffitiLocationParametersGenerator = GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator(RealGraffiti.this);
-		Log.d("RealGraffiti", "on craete done");
+		GraffitiLocationParametersGenerator graffitiLocationParametersGenerator = 
+			GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator(RealGraffiti.this);
+		Log.d("RealGraffiti", "on create done");
 	}
 
 	/**
@@ -145,7 +146,7 @@ public class RealGraffiti extends Activity {
 	}
 
 	protected void onDestroy(){
-		super.onDestroy(); Log.d("RealGraffiti", "on distroy");
+		super.onDestroy(); Log.d("RealGraffiti", "on destroy");
 	}
 
 	@Override

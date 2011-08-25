@@ -1,6 +1,6 @@
 package realgraffiti.android.maps;
 
-import org.osmdroid.util.BoundingBoxE6;
+//import org.osmdroid.util.BoundingBoxE6;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.*;
 import org.osmdroid.views.overlay.*;
@@ -76,20 +76,17 @@ public class CurrentLocationOverlay extends ItemizedOverlay<OverlayItem>{
 
 			@Override
 			public void onProviderDisabled(String provider) {
-				// TODO Auto-generated method stub
 				
 			}
 
 			@Override
 			public void onProviderEnabled(String provider) {
-				// TODO Auto-generated method stub
 				
 			}
 
 			@Override
 			public void onStatusChanged(String provider, int status,
 					Bundle extras) {
-				// TODO Auto-generated method stub
 				
 			}
 
