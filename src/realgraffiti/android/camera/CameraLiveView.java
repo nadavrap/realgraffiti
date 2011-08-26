@@ -251,6 +251,7 @@ public class CameraLiveView extends CameraLiveViewBase{
        	mMatchNWarpRunning = true;
     	offsetMatchX=offsetX;
     	offsetMatchY=offsetY;
+    	mGoodTracking = true;
         
         Thread myThread = new Thread(new Runnable() {
         	public void run() {
@@ -275,27 +276,12 @@ public class CameraLiveView extends CameraLiveViewBase{
                 mMatchNWarpRunning = false;
         	}
         });
-        myThread.setPriority(Thread.NORM_PRIORITY);
+        if(mGoodMatch && mGoodTracking)
+        	myThread.setPriority(Thread.NORM_PRIORITY);
+        else
+        	myThread.setPriority(Thread.NORM_PRIORITY+1);
+        // Start the matching thread
         myThread.start();
     }
-    
-    // Below not used - can be deleted
-	private class MatchAndWarpTask extends AsyncTask<Void, Void, Integer> {
-		protected Integer doInBackground(Void... voids) {
-            // Match features from ref image to current image, calculate homography and warp the warp-image
-            int ret=MatchAndWarp(mGraySubmat.getNativeObjAddr(), mWarpImg.getNativeObjAddr(), mWarpedImg.getNativeObjAddr());
-            if(ret==0)
-            {
-            	offsetX=offsetX-offsetMatchX;
-            	offsetY=offsetY-offsetMatchY;
-            	android.MatToBitmap(mWarpedImg, mWarpedGraffiti);
-            }
-        	mNumMatches++;
-            mMatchret = ret;
-            mMatchNWarpRunning = false;
-			return ret;
-		}
-	}
-   
     
 }
