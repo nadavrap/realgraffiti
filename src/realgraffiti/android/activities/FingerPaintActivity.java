@@ -141,6 +141,14 @@ implements ColorPickerDialog.OnColorChangedListener {
 			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 			int display_width = display.getWidth();
 			int display_height = display.getHeight();
+			// Eitan - values returned were not according to screen orientation - forcing landscape
+			if(display_width<display_height)
+			{
+				int tmp=display_width;
+				display_width=display_height;
+				display_height=tmp;
+			}
+				
 			Log.d("MyView", "Display width: " + display_width + ", height: " + display_height);        
 			//mBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 

@@ -22,11 +22,10 @@ using namespace cv;
 #define USE_BRUTE_MATCHER                   1
 #define CROSS_CHECK_FILTER                  1
 #define CROSS_CHECK_MATCH_KNN_NUM			2	/* Cross-check the two nearest neighbors */
-#define MIN_MATCH_NUM_POINTS                10
-#define MIN_MATCH_RATIO                     0.25
-#define MATCH_BACK_PROJ_MAX_DIST			25
-#define NUM_FRAMES_BETWEEN_REMATCH          40
-#define MAX_POINTS_TO_TRACK					30
+#define MIN_MATCH_NUM_POINTS_1              10
+#define MIN_MATCH_RATIO_1                   0.25
+#define MIN_MATCH_NUM_POINTS_2              7
+#define MIN_MATCH_RATIO_2                   0.5
 #define MIN_TRACK_POINTS					6
 #define MAX_TRACK_POINTS					30
 
@@ -76,21 +75,6 @@ void matches2points(const vector<DMatch>& matches, const vector<KeyPoint>& kpts_
   }
 
 }
-
-void CreateMaskImage(const Mat& srcImg, Mat& maskImg)
-{
-    // Create a binary mask for the nonzero pixels in the warpimg
-	Mat srcImgbw;
-	cvtColor(srcImg, srcImgbw, COLOR_RGB2GRAY);
-	IplImage *cvmask = cvCreateImage(cvSize(srcImg.cols,srcImg.rows),  IPL_DEPTH_8U, 1);
-	IplImage cvimg2 = srcImgbw;
-	cvInRangeS(&cvimg2, cvScalar(10), cvScalar(255), cvmask);
-	Mat mask(cvmask);
-	mask.copyTo(maskImg);
-	mask.release();
-	srcImgbw.release();
-}
-
 
 void simpleMatching( const Mat& descriptors1, const Mat& descriptors2,
                      vector<DMatch>& matches12)
@@ -283,7 +267,7 @@ JNIEXPORT jint JNICALL Java_realgraffiti_android_camera_CameraLiveView_MatchAndW
 
     Mat H12, matchmask;
     vector<unsigned char> homography_matches;
-    double num_points,num_matched=0;
+    double match_ratio,num_points,num_matched=0;
 	char stat[70];
 
 	if(descriptors1.empty())
@@ -306,7 +290,7 @@ JNIEXPORT jint JNICALL Java_realgraffiti_android_camera_CameraLiveView_MatchAndW
 	simpleMatching( descriptors1, descriptors2, filteredMatches);
 #endif
 
-	if(filteredMatches.size() < MIN_MATCH_NUM_POINTS)
+	if(filteredMatches.size() < MIN_MATCH_NUM_POINTS_1)
 		return -3;
 
 	vector<int> queryIdxs( filteredMatches.size() ), trainIdxs( filteredMatches.size() );
@@ -321,16 +305,22 @@ JNIEXPORT jint JNICALL Java_realgraffiti_android_camera_CameraLiveView_MatchAndW
 
 	// Calculate a homography transformation matrix using RANSAC for filtering outliers
 	H12 = findHomography( Mat(points1), Mat(points2), CV_RANSAC, RANSAC_REPROJ_DIST, homography_matches );
+	if(H12.empty())
+		return -4;
 
 	num_matched = countNonZero(Mat(homography_matches));
 	num_points = points2.size();
-    if( H12.empty() || (num_matched<MIN_MATCH_NUM_POINTS) || (num_matched/num_points < MIN_MATCH_RATIO) )
-		return num_points*100+num_matched;
+	match_ratio=num_matched/num_points;
 
-	// Warp the input Warp image according to the calculated homography
-    warpPerspective(*pMatWarpImg, *pMatWarpedDst, H12, (*pMatWarpImg).size() );
-	// Create a binary mask for non-black pixels in the warped image
-//	CreateMaskImage(*pMatWarpedDst, *pMatWarpedMaskDst);
+	if (((num_matched>=MIN_MATCH_NUM_POINTS_1) && (match_ratio >= MIN_MATCH_RATIO_1)) || 
+	    ((num_matched>=MIN_MATCH_NUM_POINTS_2) && (match_ratio >= MIN_MATCH_RATIO_2)) )
+	{
+		// Warp the input Warp image according to the calculated homography
+		warpPerspective(*pMatWarpImg, *pMatWarpedDst, H12, (*pMatWarpImg).size() );
+		return 0;
+	}
+	else
+		return num_points*100+num_matched;	/* for debug puroses */
 
 	return 0;
 }

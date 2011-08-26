@@ -34,7 +34,8 @@
                   android:label="radar map test">
         </activity>
         <activity android:name=".activities.FingerPaintActivity"
-                  android:label="@string/paint_act">
+                  android:label="@string/paint_act"
+                  android:screenOrientation="landscape">
         </activity>
         <service android:name=".data.SensorsService"/>
     </application>
