@@ -98,7 +98,7 @@ public class ApplicationDemo extends MapActivity {
 		addContentView(tmpView, new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT));
 
 		//_graffitiData = new RealGraffitiDataProxy(this);
-		_graffitiData = new RealGraffitiLocalData(this);
+		_graffitiData = new RealGraffitiLocalData();
 
 		GraffitiMiniMapView miniMapView = (GraffitiMiniMapView)findViewById(R.id.demo_mini_map);
 		miniMapView.setRealGraffitiData(_graffitiData);

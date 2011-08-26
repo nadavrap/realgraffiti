@@ -36,7 +36,7 @@ public class GraffitisLocationsMap extends Activity {
 	    mapView.getController().setZoom(ZOOM_LEVEL);
 	    
 	    Drawable graffitiMarker = this.getResources().getDrawable(R.drawable.spraycan);
-	    RealGraffitiData realGraffitiData = new RealGraffitiLocalData(getBaseContext());
+	    RealGraffitiData realGraffitiData = new RealGraffitiLocalData();
 	    _graffitiLocationsOverlay = new GraffitiesLocationsOverlay(this, graffitiMarker, mapView, realGraffitiData);
 	    mapView.getOverlays().add(_graffitiLocationsOverlay);
 	    

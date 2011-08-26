@@ -84,7 +84,7 @@ public class RealGraffiti extends Activity {
 		_cameraLiveView = (CameraLiveView) findViewById(R.id.cameraLiveView);
 		
 		//_graffitiData = new RealGraffitiDataProxy(this);
-		_graffitiData = new RealGraffitiLocalData(this);
+		_graffitiData = new RealGraffitiLocalData();
 
 		_miniMapView = (GraffitiMiniMapView)findViewById(R.id.miniMap);
 		_miniMapView.setRealGraffitiData(_graffitiData);
