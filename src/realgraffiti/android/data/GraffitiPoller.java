@@ -15,15 +15,17 @@ public class GraffitiPoller {
 	private RealGraffitiData _realGraffitiData;
 	private int _pollingInterval;
 	private GraffitiPollListener _polllListener;
-	private Collection<Graffiti> _recievedGraffiteis;
 	private Context _context;
 	private GraffitiPoll _graffitiPolltask;
 	
 	public GraffitiPoller(Context context, RealGraffitiData realGraffitiData, int pollingIntervapl){
 		_realGraffitiData = realGraffitiData;
 		_pollingInterval = pollingIntervapl;
-		_recievedGraffiteis = new ArrayList<Graffiti>();
 		_context = context;
+	}
+	
+	public RealGraffitiData getPolledRealGraffitiData(){
+		return _realGraffitiData;
 	}
 	
 	public void setOnPoll(GraffitiPollListener pollListener){
@@ -40,9 +42,6 @@ public class GraffitiPoller {
 		_graffitiPolltask = null;
 	}
 	
-	public Collection<Graffiti> getPolledNearByGraffities(){
-		return _recievedGraffiteis;
-	}
 	 private class GraffitiPoll extends AsyncTask<Integer, Collection<Graffiti>, Collection<Graffiti>> {
 		 private boolean _running = true;
 		 @Override
@@ -57,11 +56,7 @@ public class GraffitiPoller {
 				if(locationParametersGenerator.isLocationParametersAvailable()){
 					GraffitiLocationParameters graffitiLocationParameters = locationParametersGenerator.getCurrentLocationParameters();
 					graffities = _realGraffitiData.getNearByGraffiti(graffitiLocationParameters);
-					
-					// find the newly added graffities - won't be using it for the meanwhile
-					// graffities.removeAll(_recievedGraffiteis);
-					// _recievedGraffiteis.addAll(graffities);
-					
+				
 					publishProgress(graffities);
 				}
 				

@@ -9,8 +9,10 @@ import realgraffiti.android.R;
 import realgraffiti.android.camera.CameraLiveView;
 import realgraffiti.android.data.GraffitiLocationParametersGenerator;
 import realgraffiti.android.data.GraffitiLocationParametersGeneratorFactory;
+import realgraffiti.android.data.GraffitiPoller;
 import realgraffiti.android.data.RealGraffitiLocalData;
 import realgraffiti.android.maps.GraffitiMiniMapView;
+import realgraffiti.android.web.RealGraffitiDataBufferdProxy;
 import realgraffiti.android.web.RealGraffitiDataProxy;
 import realgraffiti.common.data.RealGraffitiData;
 import realgraffiti.common.dataObjects.Graffiti;
@@ -41,7 +43,7 @@ public class RealGraffiti extends Activity {
 //	public static final int VIEW_MODE_RGBA = 0;
 //    public static final int VIEW_MODE_MATCHING = 1;
     public static final int		SOUND_ID_SHUTTER	= 1;
-
+    private static final int POLLING_INTERVAL = 5000;
     protected static final CharSequence NO_LOCATION_AVAILIBLE_MESSAGE = "Location not available";
 	protected static final int FINGER_PAINT_ACTIVITY = 0;
     
@@ -53,6 +55,7 @@ public class RealGraffiti extends Activity {
     public static Bitmap rgLogoBitmap;
 
 	private RealGraffitiData _graffitiData;
+	private GraffitiPoller _graffitiPoller;
 	private String _backgroundLocation = null;
 	private CameraLiveView _cameraLiveView;
 	private GraffitiMiniMapView _miniMapView;
@@ -85,8 +88,13 @@ public class RealGraffiti extends Activity {
 			
 		_cameraLiveView = (CameraLiveView) findViewById(R.id.cameraLiveView);
 		
-		 _graffitiData = new RealGraffitiDataProxy(this);
-		//_graffitiData = new RealGraffitiLocalData();
+		//RealGraffitiData innerGraffitiData = new RealGraffitiDataProxy(getApplicationContext());
+		RealGraffitiData innerGraffitiData = new RealGraffitiLocalData();
+		
+
+		_graffitiPoller = new GraffitiPoller(getApplicationContext(), innerGraffitiData, POLLING_INTERVAL);
+		_graffitiData = new RealGraffitiDataBufferdProxy(getApplicationContext(), _graffitiPoller);
+		
 
 		_miniMapView = (GraffitiMiniMapView)findViewById(R.id.miniMap);
 		_miniMapView.setRealGraffitiData(_graffitiData);
@@ -136,6 +144,7 @@ public class RealGraffiti extends Activity {
 		Log.d("RealGraffiti", "on start");
 		
 		_miniMapView.startOverlays();
+		_graffitiPoller.beginPolling();
 	}
 
 	protected void onRestart(){
@@ -156,6 +165,7 @@ public class RealGraffiti extends Activity {
 		super.onPause();
 		Log.d("RealGraffiti", "on pouse");
 		_miniMapView.stopOverlays();
+		_graffitiPoller.stopPolling();
 	}
 
 	@Override
