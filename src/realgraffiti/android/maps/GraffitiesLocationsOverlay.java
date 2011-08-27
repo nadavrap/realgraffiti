@@ -31,7 +31,7 @@ public class GraffitiesLocationsOverlay extends ItemizedOverlay<OverlayItem> {
 	private MapView _mapView;
 	private Context _context;
 
-	private static final int DATA_POLLING_INTERVAL = 10000;
+	private static final int DATA_POLLING_INTERVAL = 1000;
 	
 	public GraffitiesLocationsOverlay(Context context, Drawable defaultMarker, MapView mapView, RealGraffitiData realGraffitiData) {
 		  super(defaultMarker, mapView.getResourceProxy());
