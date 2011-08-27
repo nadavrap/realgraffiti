@@ -7,18 +7,12 @@ import android.util.Log;
 
 import realgraffiti.common.dataObjects.Coordinates;
 import realgraffiti.common.dataObjects.GraffitiLocationParameters;
+import realgraffiti.common.dataObjects.Orientation;
 
 public class GraffitiLocationParametersFakeGenerator implements
 		GraffitiLocationParametersGenerator {
 	@Override
-	public GraffitiLocationParameters getCurrentLocationParameters() {
-		List<Double> siftDescriptors = new ArrayList<Double>();
-		for(int i=0; i< 16; i++){
-			siftDescriptors.add(Math.random());
-		}
-		
-		
-		
+	public GraffitiLocationParameters getCurrentLocationParameters() {	
 		double latitudeFrom = 48.645;
 		double latitudeTo = 48.655;
 		
@@ -31,8 +25,7 @@ public class GraffitiLocationParametersFakeGenerator implements
 		Log.d("realgraffiti", "lat:" + latitude + " long: " + longtitude);
 		GraffitiLocationParameters locationParameter = new GraffitiLocationParameters(
 				new Coordinates(latitude, longtitude),
-				(int)Math.random()*180,
-				siftDescriptors
+				new Orientation(new float[]{1,2,3})
 			);
 		
 		return locationParameter;
