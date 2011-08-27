@@ -71,7 +71,7 @@ public class CurrentLocationOverlay extends ItemizedOverlay<OverlayItem>{
 		      setCurrentLocation(currentLocation);
 		      
 		      MapController mapController = _mapView.getController();
-		      mapController.animateTo(currentLocation);
+		      mapController.setCenter(currentLocation);
 		    }
 
 			@Override

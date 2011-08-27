@@ -10,10 +10,13 @@ import org.osmdroid.views.overlay.ItemizedOverlay;
 import org.osmdroid.views.overlay.OverlayItem;
 //import org.osmdroid.views.overlay.OverlayItem.HotspotPlace;
 //import realgraffiti.android.R;
+import realgraffiti.android.activities.GraffitisLocationsMap;
+import realgraffiti.android.data.GraffitiPoller;
 import realgraffiti.android.web.GraffitiPollListener;
-import realgraffiti.android.web.GraffitiServerPoller;
 import realgraffiti.common.data.RealGraffitiData;
+import realgraffiti.common.dataObjects.Coordinates;
 import realgraffiti.common.dataObjects.Graffiti;
+import realgraffiti.common.dataObjects.GraffitiLocationParameters;
 
 import android.content.Context;
 import android.graphics.Point;
@@ -24,7 +27,7 @@ import android.util.Log;
 public class GraffitiesLocationsOverlay extends ItemizedOverlay<OverlayItem> {
 	private List<OverlayItem> _overlays = new ArrayList<OverlayItem>();
 	private RealGraffitiData _realGraffitiData;
-	private GraffitiServerPoller _graffitiServerPoller = null;
+	private GraffitiPoller _graffitiServerPoller = null;
 	private MapView _mapView;
 	private Context _context;
 
@@ -85,19 +88,22 @@ public class GraffitiesLocationsOverlay extends ItemizedOverlay<OverlayItem> {
 	}
 
 	private void initializeGraffitiServerPoller() {
-	    _graffitiServerPoller = new GraffitiServerPoller(_context, _realGraffitiData, DATA_POLLING_INTERVAL);
+	    _graffitiServerPoller = new GraffitiPoller(_context, _realGraffitiData, DATA_POLLING_INTERVAL);
 	    
 	    _graffitiServerPoller.setOnPoll(new GraffitiPollListener() {
 			@Override
 			public void onPollingData(Collection<Graffiti> graffities) {
 				if(graffities != null && graffities.size() > 0){
+					graffities = filterExistingGraffities(graffities);
 					addGraffities(graffities);
 				    _mapView.invalidate();
 				}
 				Log.d("realgraffiti", "poll data of size: " + graffities.size());
 			}
+
+
 		});
-	    _graffitiServerPoller.beginPolling();
+
 	    Log.d("GraffitiesLocationOverlay", "Start Polling for Graffites");
 	}
 
@@ -106,6 +112,23 @@ public class GraffitiesLocationsOverlay extends ItemizedOverlay<OverlayItem> {
 		// TODO Auto-generated method stub
 		return false;
 	}
+	
+	private Collection<Graffiti> filterExistingGraffities( Collection<Graffiti> graffities) {
+		Collection<Graffiti> filteredGraffitie = new ArrayList<Graffiti>();
+		filteredGraffitie.addAll(graffities);
+		
+		for(Graffiti graffiti : graffities){
+			for(OverlayItem overlayItem: _overlays){
+				Coordinates graffitiCoordinates = graffiti.getLocationParameters().getCoordinates();
+				GeoPoint graffitiGeoPoint = new GeoPoint(graffitiCoordinates.getLatitude(), graffitiCoordinates.getLongitude());
+				if(overlayItem.getPoint().equals(graffitiGeoPoint))
+					filteredGraffitie.remove(graffiti);
+			}
+		}
+		
+		return filteredGraffitie;
+	}
+	
 	
 	
 }

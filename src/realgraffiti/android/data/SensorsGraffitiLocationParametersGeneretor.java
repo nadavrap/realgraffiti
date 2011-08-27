@@ -24,6 +24,70 @@ public class SensorsGraffitiLocationParametersGeneretor implements GraffitiLocat
 	private SensorManager _mySensorManager;
 	private static final int TWO_MINUTES = 1000 * 60 * 2;
 
+	@Override
+	public GraffitiLocationParameters getCurrentLocationParameters() {
+		GraffitiLocationParameters glp = new GraffitiLocationParameters(_graffitiLocationParameters);
+		return glp;
+
+	}
+	public void stopListening(){
+		_myLocationManager.removeUpdates(_myLocationListener);
+		_mySensorManager.unregisterListener(_magnetlistener);
+	}
+	
+	public SensorsGraffitiLocationParametersGeneretor(Context context) {
+		startListening(context);
+	}
+
+	@Override
+	public boolean isLocationParametersAvailable() {
+		return isLocationParametersAvailable;
+	};
+	
+	public void startListening(Context context){
+		_myLocationManager = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
+		_myLocationListener = new MyLocationListener();
+		_myLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,_myLocationListener);
+		
+		//Eitan - Get last known GPS and Network locations and use the better one
+		Location gpsloc = _myLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+  	  	Location netloc = _myLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+  	  	
+  	  	if(netloc != null){
+	  	  	Location loc;
+	
+	  	  	if (isBetterLocation(netloc, gpsloc))
+	  	  		loc = netloc;
+	  	  	else
+	  	  		loc = gpsloc;
+	  	  	
+			if(loc != null) {
+				_graffitiLocationParameters.setCoordinates(new Coordinates((int)loc.getLatitude(), (int)loc.getLongitude()));
+				isLocationParametersAvailable = true;
+			}
+  	  	}
+		
+		// First, get an instance of the SensorManager
+	    _mySensorManager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
+	    // Second, get the sensor you're interested in
+	    Sensor magnetfield = _mySensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
+	    // Third, implement a SensorEventListener class
+	    _magnetlistener = new SensorEventListener() {
+	        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+	            // do things if you're interested in accuracy changes
+	        }
+	        public void onSensorChanged(SensorEvent event) {
+	        	//GraffitiLocationParametersGeneratorFactory.setGraffitiLocationOrientation(event.values[0]);
+	        	_graffitiLocationParameters.setOrientation(new Orientation(event.values));
+	        	/*Log.d("SensorGenerator", "Orientation changed: x:" + event.values[0] +
+	        						", y:" + event.values[1] +
+	        						", z:" + event.values[2]);*/
+	        }
+	    };
+	    // Finally, register the listener
+	    _mySensorManager.registerListener(_magnetlistener, magnetfield, orientationDelay);
+	}
+	
     /** Determines whether one Location reading is better than the current Location fix
      * @param location  The new Location that you want to evaluate
      * @param currentBestLocation  The current Location fix, to which you want to compare the new one
@@ -78,62 +142,7 @@ public class SensorsGraffitiLocationParametersGeneretor implements GraffitiLocat
    }
 	
 	
-	public SensorsGraffitiLocationParametersGeneretor(Context context) {
-		startListening(context);
-	}
-
-	@Override
-	public boolean isLocationParametersAvailable() {
-		return isLocationParametersAvailable;
-	};
 	
-	public GraffitiLocationParameters generate(){
-		return _graffitiLocationParameters;
-	}
-
-	public void startListening(Context context){
-		_myLocationManager = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
-		_myLocationListener = new MyLocationListener();
-		_myLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,_myLocationListener);
-		
-		//Eitan - Get last known GPS and Network locations and use the better one
-		Location gpsloc = _myLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-  	  	Location netloc = _myLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-  	  	
-  	  	if(netloc != null){
-	  	  	Location loc;
-	
-	  	  	if (isBetterLocation(netloc, gpsloc))
-	  	  		loc = netloc;
-	  	  	else
-	  	  		loc = gpsloc;
-	  	  	
-			if(loc != null) {
-				_graffitiLocationParameters.setCoordinates(new Coordinates((int)loc.getLatitude(), (int)loc.getLongitude()));
-				isLocationParametersAvailable = true;
-			}
-  	  	}
-		
-		// First, get an instance of the SensorManager
-	    _mySensorManager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
-	    // Second, get the sensor you're interested in
-	    Sensor magnetfield = _mySensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
-	    // Third, implement a SensorEventListener class
-	    _magnetlistener = new SensorEventListener() {
-	        public void onAccuracyChanged(Sensor sensor, int accuracy) {
-	            // do things if you're interested in accuracy changes
-	        }
-	        public void onSensorChanged(SensorEvent event) {
-	        	//GraffitiLocationParametersGeneratorFactory.setGraffitiLocationOrientation(event.values[0]);
-	        	_graffitiLocationParameters.setOrientation(new Orientation(event.values));
-	        	/*Log.d("SensorGenerator", "Orientation changed: x:" + event.values[0] +
-	        						", y:" + event.values[1] +
-	        						", z:" + event.values[2]);*/
-	        }
-	    };
-	    // Finally, register the listener
-	    _mySensorManager.registerListener(_magnetlistener, magnetfield, orientationDelay);
-	}
 	private class MyLocationListener implements LocationListener{
 		public void onLocationChanged(Location loc) {
 			isLocationParametersAvailable = true;
@@ -148,12 +157,5 @@ public class SensorsGraffitiLocationParametersGeneretor implements GraffitiLocat
 		public void onProviderEnabled(String provider) {}
 		public void onStatusChanged(String provider, int status, Bundle extras) {}
 	}
-	@Override
-	public GraffitiLocationParameters getCurrentLocationParameters() {
-		return _graffitiLocationParameters;
-	}
-	public void stopListening(){
-		_myLocationManager.removeUpdates(_myLocationListener);
-		_mySensorManager.unregisterListener(_magnetlistener);
-	}
+
 }

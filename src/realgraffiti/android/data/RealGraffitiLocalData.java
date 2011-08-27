@@ -16,9 +16,9 @@ public class RealGraffitiLocalData implements RealGraffitiData {
 	}
 
 	@Override
-	public boolean addNewGraffiti(Graffiti GraffitiDto) {
-		GraffitiDto.setKey(new Long(_graffiteis.size()));
-		_graffiteis.add(GraffitiDto);
+	public boolean addNewGraffiti(Graffiti graffiti) {
+		graffiti.setKey(new Long(_graffiteis.size()));
+		_graffiteis.add(graffiti);
 		return true;
 	}
 
@@ -30,12 +30,7 @@ public class RealGraffitiLocalData implements RealGraffitiData {
 
 	@Override
 	public byte[] getGraffitiImage(Long graffitiKey) {
-		int n = 16;
-		int colorNumber = 256;
-		byte[] imageData = new byte[n];
-		for (int i = 0; i < n; i++) {
-			imageData[i] = (byte) Math.floor(Math.random() * colorNumber);
-		}
+		byte[] imageData = _graffiteis.get(graffitiKey.intValue()).getImageData();
 
 		return imageData;
 	}
