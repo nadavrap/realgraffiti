@@ -88,8 +88,10 @@ public class RealGraffiti extends Activity {
 			
 		_cameraLiveView = (CameraLiveView) findViewById(R.id.cameraLiveView);
 		
-		//RealGraffitiData innerGraffitiData = new RealGraffitiDataProxy(getApplicationContext());
-		RealGraffitiData innerGraffitiData = new RealGraffitiLocalData();
+		// change the comment between the following lines to switch between server and local storage:
+		
+		//RealGraffitiData innerGraffitiData = new RealGraffitiDataProxy(getApplicationContext()); // server storage
+		RealGraffitiData innerGraffitiData = new RealGraffitiLocalData(); // local storage
 		
 
 		_graffitiPoller = new GraffitiPoller(getApplicationContext(), innerGraffitiData, POLLING_INTERVAL);
@@ -179,17 +181,18 @@ public class RealGraffiti extends Activity {
 		Button button = (Button)findViewById(R.id.addNewGraffitiButton);
 		button.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onClick(View v) {
-				_cameraLiveView.setViewMode(CameraLiveView.VIEW_MODE_PAINTING);
-				playSound(SOUND_ID_SHUTTER);
+			public void onClick(View v) {				
 				GraffitiLocationParametersGenerator graffitiLocationParametersGenerator = 
 					GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator(RealGraffiti.this);
 
-
-				if(graffitiLocationParametersGenerator.isLocationParametersAvailable() == false){
+				//if(graffitiLocationParametersGenerator.isLocationParametersAvailable() == false){
+				if(false){ // DEBUG
 					Toast noLocationAvailibleToast = Toast.makeText(getApplicationContext(), NO_LOCATION_AVAILIBLE_MESSAGE, 1000);
 					noLocationAvailibleToast.show();
 				} else{
+					_cameraLiveView.setViewMode(CameraLiveView.VIEW_MODE_PAINTING);
+					playSound(SOUND_ID_SHUTTER);
+					
 					_paintedGraffiti = new Graffiti();
 					GraffitiLocationParameters currentLocationParameters = graffitiLocationParametersGenerator.getCurrentLocationParameters();
 					_paintedGraffiti.setLocationParameters(currentLocationParameters); 
