@@ -35,4 +35,11 @@ public class RealGraffitiLocalData implements RealGraffitiData {
 		return imageData;
 	}
 
+	@Override
+	public byte[] getGraffitiWallImage(Long graffitiKey) {
+		byte[] allImageData = _graffiteis.get(graffitiKey.intValue()).getWallImageData();
+
+		return allImageData;
+	}
+
 }

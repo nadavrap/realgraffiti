@@ -3,4 +3,5 @@
     <string name="addGraffiti">addGraffiti</string>
     <string name="getNearByGraffiti">getNearByGraffiti</string>
     <string name="getGraffitiImage">getGraffitiImage</string>
+    <string name="getGraffitiWallImage">getGraffitiWallImage</string>
 </resources>

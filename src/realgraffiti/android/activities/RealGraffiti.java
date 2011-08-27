@@ -11,6 +11,7 @@ import realgraffiti.android.data.GraffitiLocationParametersGenerator;
 import realgraffiti.android.data.GraffitiLocationParametersGeneratorFactory;
 import realgraffiti.android.data.RealGraffitiLocalData;
 import realgraffiti.android.maps.GraffitiMiniMapView;
+import realgraffiti.android.web.RealGraffitiDataProxy;
 import realgraffiti.common.data.RealGraffitiData;
 import realgraffiti.common.dataObjects.Graffiti;
 import realgraffiti.common.dataObjects.GraffitiLocationParameters;
@@ -83,8 +84,8 @@ public class RealGraffiti extends Activity {
 			
 		_cameraLiveView = (CameraLiveView) findViewById(R.id.cameraLiveView);
 		
-		//_graffitiData = new RealGraffitiDataProxy(this);
-		_graffitiData = new RealGraffitiLocalData();
+		_graffitiData = new RealGraffitiDataProxy(this);
+		//_graffitiData = new RealGraffitiLocalData();
 
 		_miniMapView = (GraffitiMiniMapView)findViewById(R.id.miniMap);
 		_miniMapView.setRealGraffitiData(_graffitiData);
@@ -227,7 +228,7 @@ public class RealGraffiti extends Activity {
 					
 					
 					AddNewGraffitiTask addGraffitiTask = new AddNewGraffitiTask();
-					Graffiti graffiti = new Graffiti(_paintedGraffitiLocationParameters, imageData);
+					Graffiti graffiti = new Graffiti(_paintedGraffitiLocationParameters, imageData, new byte[]{1,2,3});
 					_paintedGraffitiLocationParameters = null;
 					addGraffitiTask.execute(graffiti);
 				}

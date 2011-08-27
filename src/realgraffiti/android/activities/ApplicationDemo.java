@@ -194,7 +194,8 @@ public class ApplicationDemo extends MapActivity {
 
 					Log.d("ApplicationDemo","newButton");
 					byte [] imageData = createRandomImage();
-					Graffiti graffiti = new Graffiti(glp, imageData);
+					byte [] wallImageData = createRandomImage();
+					Graffiti graffiti = new Graffiti(glp, imageData, wallImageData);
 					addGraffitiTask.execute(graffiti);
 				}
 			}
