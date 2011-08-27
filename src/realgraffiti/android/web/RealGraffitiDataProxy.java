@@ -61,7 +61,7 @@ public class RealGraffitiDataProxy implements RealGraffitiData{
 		
 		Log.d("DataProxy","client Error: " + client.getErrorMessage());
 		Log.d("DataProxy","client responseCode: " + client.getResponseCode());
-		Log.d("DataProxy","client responseString: " + client.getResponseString());
+		//Log.d("DataProxy","client responseString: " + client.getResponseString());
 		
 		Type collectionType = new TypeToken<ArrayList<Graffiti>>(){}.getType();
 		Collection<Graffiti> nearByGraffiti = (ArrayList<Graffiti>)client.getResponseObject(collectionType);

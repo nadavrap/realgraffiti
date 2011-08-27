@@ -54,11 +54,12 @@ public class RealGraffiti extends Activity {
 
 	private RealGraffitiData _graffitiData;
 	private String _backgroundLocation = null;
-	private GraffitiLocationParameters _paintedGraffitiLocationParameters;
 	private CameraLiveView _cameraLiveView;
 	private GraffitiMiniMapView _miniMapView;
 	private SoundPool soundPool;
 	private HashMap<Integer, Integer> soundPoolMap;
+	
+	private Graffiti _paintedGraffiti;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -84,7 +85,7 @@ public class RealGraffiti extends Activity {
 			
 		_cameraLiveView = (CameraLiveView) findViewById(R.id.cameraLiveView);
 		
-		_graffitiData = new RealGraffitiDataProxy(this);
+		 _graffitiData = new RealGraffitiDataProxy(this);
 		//_graffitiData = new RealGraffitiLocalData();
 
 		_miniMapView = (GraffitiMiniMapView)findViewById(R.id.miniMap);
@@ -174,26 +175,30 @@ public class RealGraffiti extends Activity {
 				GraffitiLocationParametersGenerator graffitiLocationParametersGenerator = 
 					GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator(RealGraffiti.this);
 
-				if(false){
-// EITAN - DEBUG	if(graffitiLocationParametersGenerator.isLocationParametersAvailable() == false){
+
+				if(graffitiLocationParametersGenerator.isLocationParametersAvailable() == false){
 					Toast noLocationAvailibleToast = Toast.makeText(getApplicationContext(), NO_LOCATION_AVAILIBLE_MESSAGE, 1000);
 					noLocationAvailibleToast.show();
 				} else{
-					_paintedGraffitiLocationParameters = graffitiLocationParametersGenerator.getCurrentLocationParameters();
+					_paintedGraffiti = new Graffiti();
+					GraffitiLocationParameters currentLocationParameters = graffitiLocationParametersGenerator.getCurrentLocationParameters();
+					_paintedGraffiti.setLocationParameters(currentLocationParameters); 
 					
 					Bitmap graffitiWallImg = _cameraLiveView.getBackgroundImage();
-					String filename =getFilesDir()+ "/wall";
+					
+					_paintedGraffiti.setWallImageData(bitmapToByteArray(graffitiWallImg));
+					
+					String filename = getFilesDir()+ "/wall";
 					FileOutputStream fos = null;
 					try {
 						fos = new FileOutputStream(filename);
 					} catch (FileNotFoundException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					graffitiWallImg.compress(Bitmap.CompressFormat.PNG, 90, fos);
 					
 					Intent myIntent = new Intent(RealGraffiti.this, FingerPaintActivity.class);
-					//TODO
+
 					//Need to change the 'Location' to the real location of the image
 					myIntent.putExtra(FingerPaintActivity.WALL_IMAGE_LOC, filename);
 					startActivityForResult(myIntent, FINGER_PAINT_ACTIVITY);
@@ -213,24 +218,20 @@ public class RealGraffiti extends Activity {
 					
 					_backgroundLocation = newText;
 					
-					if (_backgroundLocation != null) //Background should be taken from given file
-					{
+					if (_backgroundLocation != null){ //Background should be taken from given file
 						graffitiBitMap = BitmapFactory.decodeFile(_backgroundLocation).copy(Bitmap.Config.ARGB_8888, true);
 						_cameraLiveView.setViewMode(CameraLiveView.VIEW_MODE_VIEWING);
 					}
-					else
+					else{
 						_cameraLiveView.setViewMode(CameraLiveView.VIEW_MODE_IDLE);
+					}
 					
-					ByteArrayOutputStream os = new ByteArrayOutputStream();
-					graffitiBitMap.compress(CompressFormat.PNG, 10, os);
-					//ByteArrayInputStream byteInputStream = new ByteArrayInputStream(imageData);
-					byte[] imageData = os.toByteArray();
+					byte[] imageData = bitmapToByteArray(graffitiBitMap);
+					_paintedGraffiti.setImageData(imageData);	
 					
-					
-					AddNewGraffitiTask addGraffitiTask = new AddNewGraffitiTask();
-					Graffiti graffiti = new Graffiti(_paintedGraffitiLocationParameters, imageData, new byte[]{1,2,3});
-					_paintedGraffitiLocationParameters = null;
-					addGraffitiTask.execute(graffiti);
+					AddNewGraffitiTask addGraffitiTask = new AddNewGraffitiTask();					
+					addGraffitiTask.execute(_paintedGraffiti);
+					_paintedGraffiti = null;
 				}
 				else {
 					//When the user pressed 'Back', or other error
@@ -238,9 +239,17 @@ public class RealGraffiti extends Activity {
 					Log.d("RealGraffiti", "Returned from FingerPaint: Result Cancled");
 				}break;
 			}
-		}	
+		}
 	}
 
+	private byte[] bitmapToByteArray(Bitmap bitmap){
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		bitmap.compress(CompressFormat.PNG, 10, os);
+		
+		byte[] imageData = os.toByteArray();
+		return imageData;
+	}
+	
 	private class AddNewGraffitiTask extends AsyncTask<Graffiti, Integer, Boolean> {
 		private ProgressDialog _progressDialog; 
 		protected Boolean doInBackground(Graffiti... graffiti) {
