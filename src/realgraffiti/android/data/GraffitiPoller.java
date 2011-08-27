@@ -1,10 +1,9 @@
-package realgraffiti.android.web;
+package realgraffiti.android.data;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-import realgraffiti.android.data.GraffitiLocationParametersGenerator;
-import realgraffiti.android.data.GraffitiLocationParametersGeneratorFactory;
+import realgraffiti.android.web.GraffitiPollListener;
 import realgraffiti.common.data.RealGraffitiData;
 import realgraffiti.common.dataObjects.Graffiti;
 import realgraffiti.common.dataObjects.GraffitiLocationParameters;
@@ -12,7 +11,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
-public class GraffitiServerPoller {
+public class GraffitiPoller {
 	private RealGraffitiData _realGraffitiData;
 	private int _pollingInterval;
 	private GraffitiPollListener _polllListener;
@@ -20,7 +19,7 @@ public class GraffitiServerPoller {
 	private Context _context;
 	private GraffitiPoll _graffitiPolltask;
 	
-	public GraffitiServerPoller(Context context, RealGraffitiData realGraffitiData, int pollingIntervapl){
+	public GraffitiPoller(Context context, RealGraffitiData realGraffitiData, int pollingIntervapl){
 		_realGraffitiData = realGraffitiData;
 		_pollingInterval = pollingIntervapl;
 		_recievedGraffiteis = new ArrayList<Graffiti>();
@@ -41,6 +40,9 @@ public class GraffitiServerPoller {
 		_graffitiPolltask = null;
 	}
 	
+	public Collection<Graffiti> getPolledNearByGraffities(){
+		return _recievedGraffiteis;
+	}
 	 private class GraffitiPoll extends AsyncTask<Integer, Collection<Graffiti>, Collection<Graffiti>> {
 		 private boolean _running = true;
 		 @Override
@@ -49,22 +51,24 @@ public class GraffitiServerPoller {
 			 while(_running){
 				 GraffitiLocationParametersGenerator locationParametersGenerator = 
 					 GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator(_context);
+				 
 				Log.d("GraffitiPoll",  "Location Parameter Available (for GraffitiPoll): " + locationParametersGenerator.isLocationParametersAvailable());
+				
 				if(locationParametersGenerator.isLocationParametersAvailable()){
 					GraffitiLocationParameters graffitiLocationParameters = locationParametersGenerator.getCurrentLocationParameters();
 					graffities = _realGraffitiData.getNearByGraffiti(graffitiLocationParameters);
 					
-					// find the newly added graffities
-					graffities.removeAll(_recievedGraffiteis);
-					_recievedGraffiteis.addAll(graffities);
+					// find the newly added graffities - won't be using it for the meanwhile
+					// graffities.removeAll(_recievedGraffiteis);
+					// _recievedGraffiteis.addAll(graffities);
 					
 					publishProgress(graffities);
-					
-					try {
-						Thread.sleep(params[0]);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
+				}
+				
+				try {
+					Thread.sleep(params[0]);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
 			 }	 
 			return graffities;

@@ -4,13 +4,13 @@ import org.osmdroid.views.MapView;
 
 import realgraffiti.android.R;
 import realgraffiti.android.data.GraffitiLocationParametersGeneratorFactory;
+import realgraffiti.android.data.GraffitiPoller;
 import realgraffiti.common.data.RealGraffitiData;
 import realgraffiti.common.dataObjects.Graffiti;
 import realgraffiti.common.dataObjects.GraffitiLocationParameters;
 import realgraffiti.android.data.*;
 import realgraffiti.android.maps.CurrentLocationOverlay;
 import realgraffiti.android.maps.GraffitiesLocationsOverlay;
-import realgraffiti.android.web.GraffitiServerPoller;
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
