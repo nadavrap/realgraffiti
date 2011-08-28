@@ -17,6 +17,7 @@ import android.util.Log;
 public class SensorsGraffitiLocationParametersGeneretor implements GraffitiLocationParametersGenerator {
 	private static GraffitiLocationParameters _graffitiLocationParameters = new GraffitiLocationParameters();
 	private final int orientationDelay = SensorManager.SENSOR_DELAY_NORMAL;
+	private static final double E6 = 1000000;
 	private LocationManager _myLocationManager;
 	private MyLocationListener _myLocationListener;
 	private boolean isLocationParametersAvailable = false;
@@ -31,6 +32,7 @@ public class SensorsGraffitiLocationParametersGeneretor implements GraffitiLocat
 
 	}
 	public void stopListening(){
+		Log.d("RealGraffiti", "SensorsGraffitiLocationParametersGeneretor - stop Listening");
 		_myLocationManager.removeUpdates(_myLocationListener);
 		_mySensorManager.unregisterListener(_magnetlistener);
 	}
@@ -45,6 +47,7 @@ public class SensorsGraffitiLocationParametersGeneretor implements GraffitiLocat
 	};
 	
 	public void startListening(Context context){
+		Log.d("RealGraffiti", "SensorsGraffitiLocationParametersGeneretor - start Listening");
 		_myLocationManager = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
 		_myLocationListener = new MyLocationListener();
 		_myLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,_myLocationListener);
@@ -62,7 +65,7 @@ public class SensorsGraffitiLocationParametersGeneretor implements GraffitiLocat
 	  	  		loc = gpsloc;
 	  	  	
 			if(loc != null) {
-				_graffitiLocationParameters.setCoordinates(new Coordinates((int)loc.getLatitude(), (int)loc.getLongitude()));
+				_graffitiLocationParameters.setCoordinates(new Coordinates((int)(loc.getLatitude() * E6), (int)(loc.getLongitude() * E6) ));
 				isLocationParametersAvailable = true;
 			}
   	  	}

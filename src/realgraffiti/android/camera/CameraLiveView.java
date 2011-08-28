@@ -23,13 +23,17 @@ import android.view.SurfaceHolder;
 public class CameraLiveView extends CameraLiveViewBase{
 
 	public static final int     VIEW_MODE_IDLE     		= 0;
-    public static final int     VIEW_MODE_SEARCHING 	= 1;
-    public static final int     VIEW_MODE_VIEWING 		= 2;
-    public static final int     VIEW_MODE_PAINTING 		= 3;
+    public static final int     VIEW_MODE_VIEWING 		= 1;
+    public static final int     VIEW_MODE_PAINTING 		= 2;
 	
     public static final int     MAX_BAD_MATHES_ALLOWED	= 5;
     public static final long    LOGO_DISPLAY_PERIOD_MS	= 4000;
-    
+
+    private static final int    TRACKING_IDLE		= 1;
+    private static final int    TRACKING_STARTED	= 2;
+    private static final int    TRACKING_GOOD		= 3;
+    private static final int    TRACKING_LOST		= 4;
+
     private static int           mViewMode;
 	
 	private static long prevFTime = 0, startTime;
@@ -46,39 +50,28 @@ public class CameraLiveView extends CameraLiveViewBase{
     private float offsetX, offsetY;
     private float offsetMatchX, offsetMatchY;
     private Bitmap mWarpedGraffiti;
-    private boolean mGoodTracking = false;
     private boolean mGoodMatch = false;
     private int	mNumBadMatches = 0;
+    private int mTrackingStatus = TRACKING_IDLE;
 
     
 	public CameraLiveView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		if (isInEditMode()) {return;}
 		mViewMode = VIEW_MODE_IDLE;
-		Log.d("CameraLiveView", "on craete");
+        startTime=SystemClock.uptimeMillis();
+		Log.d("RealGraffiti", "on craete");
 	}  
     
 
     @Override
     public void surfaceChanged(SurfaceHolder _holder, int format, int width, int height) {
         super.surfaceChanged(_holder, format, width, height);
-		Log.d("CameraLiveView", "surface changed");
-
-        // Copy the resource bitmap and convert to ARGB_8888 format, required by BitmapToMat
-        Bitmap tmpBitmap = RealGraffiti.graffitiBitMap.copy(Bitmap.Config.ARGB_8888, true);
-        // Convert to OpenCV Mat object and resize
-        mWarpImg=android.BitmapToMat(tmpBitmap);
-        if(!mWarpImg.empty())
-        {
-        	Imgproc.resize(mWarpImg, mWarpImg, new Size(getFrameWidth(), getFrameHeight()));
-//            Imgproc.cvtColor(mWarpImg, mWarpImg, Imgproc.COLOR_RGBA2RGB, 0);
-        }
-        tmpBitmap.recycle();
+		Log.d("RealGraffiti", "surface changed");
         
         mWarpedGraffiti=Bitmap.createBitmap(getFrameWidth(), getFrameHeight(), Bitmap.Config.ARGB_8888);
-        startTime=SystemClock.uptimeMillis();
         
-		Log.d("CameraLiveView", "surface changed before synch");
+		Log.d("RealGraffiti", "surface changed before synch");
         
         synchronized (this) {
             // initialize Mats before usage
@@ -89,7 +82,7 @@ public class CameraLiveView extends CameraLiveViewBase{
             mWarpedImg = new Mat();
             mTrackOffset = new Mat(1,2,CvType.CV_32FC1);
         }
-		Log.d("CameraLiveView", "surface changed done");
+		Log.d("RealGraffiti", "surface changed done");
     }
 
     @Override
@@ -103,28 +96,8 @@ public class CameraLiveView extends CameraLiveViewBase{
             break;
         case VIEW_MODE_PAINTING:
              break;
-        case VIEW_MODE_SEARCHING:
-            Imgproc.cvtColor(mYuv, mRgba, Imgproc.COLOR_YUV420i2RGB, 4);
-            
-            // Run the interest point detection, matching, homography calculation and Graffiti warping as a background task
-            mMatchret=MatchAndWarp(mGraySubmat.getNativeObjAddr(), mWarpImg.getNativeObjAddr(), mWarpedImg.getNativeObjAddr());
-            // Match found - switch to VIEWING mode and reset the offset matrix
-        	mNumMatches++;
-            if(mMatchret==0)
-            {
-            	android.MatToBitmap(mWarpedImg, mWarpedGraffiti);
-            	mNumMatches++;
-               	offsetX = 0;
-            	offsetY = 0;
-            	offsetMatchX = 0;
-            	offsetMatchY = 0;
-            	mViewMode = VIEW_MODE_VIEWING;
-            	mGoodTracking = true;
-            	mTrackOffset = new Mat(1,2,CvType.CV_32FC1);
-            }
-            break;
         case VIEW_MODE_VIEWING:
-        	if(mGoodTracking && mGoodMatch)
+        	if( (mTrackingStatus == TRACKING_GOOD) && mGoodMatch)
         		Imgproc.cvtColor(mYuv, mRgba, Imgproc.COLOR_YUV420i2RGB, 4);
         	else
         		Imgproc.cvtColor(mGraySubmat, mRgba, Imgproc.COLOR_GRAY2RGB, 4);
@@ -139,10 +112,13 @@ public class CameraLiveView extends CameraLiveViewBase{
 	           	// Update the accumulated offset
 	           	offsetX+=offset[0];
 	           	offsetY+=offset[1];
+	           	if(mTrackingStatus == TRACKING_STARTED)
+	           		mTrackingStatus = TRACKING_GOOD;
             }
-            else if (ret == -3)
+            else if ( ((mTrackingStatus == TRACKING_STARTED) || (mTrackingStatus == TRACKING_GOOD) )&& (ret == -3))
             {
-               	mGoodTracking = false;
+        		Log.d("RealGraffiti", "bad tracking");
+        		mTrackingStatus = TRACKING_LOST;
             	offsetX = 0;
             	offsetY = 0;
             }
@@ -171,7 +147,7 @@ public class CameraLiveView extends CameraLiveViewBase{
            	canvas.drawBitmap(RealGraffiti.rgLogoBitmap, (getFrameWidth()-RealGraffiti.rgLogoBitmap.getWidth())/2
           			, (getFrameHeight()-RealGraffiti.rgLogoBitmap.getHeight())/2, paint);
           }
-          else if( (mViewMode == VIEW_MODE_VIEWING) && mGoodTracking && mGoodMatch)
+          else if( (mViewMode == VIEW_MODE_VIEWING) && (mTrackingStatus == TRACKING_GOOD) && mGoodMatch)
           {
            	Canvas canvas = new Canvas(bmp);
           	Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
@@ -194,7 +170,7 @@ public class CameraLiveView extends CameraLiveViewBase{
     @Override
     public void run() {
         super.run();
-		Log.d("CameraLiveView", "run");
+		Log.d("RealGraffiti", "run");
 
         synchronized (this) {
             // Explicitly deallocate Mats
@@ -212,30 +188,65 @@ public class CameraLiveView extends CameraLiveViewBase{
         }
     }
     
-    public void setViewMode(int viewMode)
+    // Set the working mode to Idle mode - no graffiti to view
+    public void setModeToIdle()
     {
-    	if(mViewMode == VIEW_MODE_VIEWING)
-    	{
-        	offsetX = 0;
-        	offsetY = 0;
-        	offsetMatchX = 0;
-        	offsetMatchY = 0;
-        	mGoodTracking = true;
-    	}
-    	mViewMode = viewMode;
-		Log.d("CameraLiveView", "set view mode");
+		Log.d("RealGraffiti", "setModeToIdle");
+    	mViewMode = VIEW_MODE_IDLE;
+    }
+
+    // Set the working mode to Viewing mode - view a single live graffiti
+    public void setModeToViewing(Bitmap wallImage, Bitmap graffitiImage)
+    {
+		Log.d("RealGraffiti", "setModeToViewing");
+        Bitmap tmpBitmap;
+
+        // Save graffitiImage as a OpenCV Mat object
+        tmpBitmap = graffitiImage.copy(Bitmap.Config.ARGB_8888, true);
+        mWarpImg=android.BitmapToMat(tmpBitmap);
+        if(!mWarpImg.empty())
+        	Imgproc.resize(mWarpImg, mWarpImg, new Size(getFrameWidth(), getFrameHeight()));
+        
+        // Get wallImage, convert to gray-scale and process for interest points
+        tmpBitmap = wallImage.copy(Bitmap.Config.ARGB_8888, true);
+        Mat wallImg = android.BitmapToMat(tmpBitmap);
+        if(wallImg.empty())
+    		Log.d("RealGraffiti", "Error - empty wall image");
+        else
+        {
+        	Imgproc.cvtColor(wallImg, wallImg, Imgproc.COLOR_BGRA2GRAY, 1);
+        	ProcessRefFrame(wallImg.getNativeObjAddr());
+        }
+        tmpBitmap.recycle();
+        wallImg.dispose();
+		
+        mTrackingStatus = TRACKING_IDLE;
+    	mGoodMatch = false;
+		offsetX = 0;
+    	offsetY = 0;
+    	offsetMatchX = 0;
+    	offsetMatchY = 0;
+		
+    	mViewMode = VIEW_MODE_VIEWING;
     }
     
-    public Bitmap getBackgroundImage()
+    
+    // Set the working mode to Painting mode - get last frame and stop camera preview
+    public Bitmap setModeToPainting()
     {
-    	// Process the reference frame and save the detected features internally
-        ProcessRefFrame(mGraySubmat.getNativeObjAddr());
+		Log.d("RealGraffiti", "setModeToPainting");
+    	mViewMode = VIEW_MODE_PAINTING;
         Bitmap bmp = Bitmap.createBitmap(getFrameWidth(), getFrameHeight(), Bitmap.Config.ARGB_8888);
         
         if (android.MatToBitmap(mRgba, bmp))
             return bmp;
         else
         	return null;
+    }
+    
+    public int getMode()
+    {
+    	return mViewMode;
     }
     
     public native void ProcessRefFrame(long matAddrSrc); 
@@ -248,27 +259,32 @@ public class CameraLiveView extends CameraLiveViewBase{
     
     private void RunMatchThread()
     {
+		Log.d("RealGraffiti", "RunMatchThread");
        	mMatchNWarpRunning = true;
     	offsetMatchX=offsetX;
     	offsetMatchY=offsetY;
-    	mGoodTracking = true;
+    	if( (mTrackingStatus == TRACKING_IDLE) || (mTrackingStatus == TRACKING_LOST) )
+    	{
+    		mTrackingStatus = TRACKING_STARTED;
+    		mGoodMatch = false;
+    	}
         
         Thread myThread = new Thread(new Runnable() {
         	public void run() {
                 mMatchret=MatchAndWarp(mGraySubmat.getNativeObjAddr(), mWarpImg.getNativeObjAddr(), mWarpedImg.getNativeObjAddr());
                 if(mMatchret==0)
                 {
+            		Log.d("RealGraffiti", "Good match found");
                 	mNumBadMatches=0;
                 	offsetX=offsetX-offsetMatchX;
                 	offsetY=offsetY-offsetMatchY;
-                	if(mGoodTracking)
+                	if(mTrackingStatus == TRACKING_GOOD)
                 		mGoodMatch = true;	// If tracking was good, indicate that we now have a good match as well
-                	else
-                		mGoodTracking = true; // Turn on good tracking, since we have a new warp data
                 	android.MatToBitmap(mWarpedImg, mWarpedGraffiti);
                 }
                 else
                 {
+            		Log.d("RealGraffiti", "Bad match");
                 	if(mGoodMatch && (mNumBadMatches++ > MAX_BAD_MATHES_ALLOWED) )
                        	mGoodMatch = false;
                 }
@@ -276,7 +292,7 @@ public class CameraLiveView extends CameraLiveViewBase{
                 mMatchNWarpRunning = false;
         	}
         });
-        if(mGoodMatch && mGoodTracking)
+        if(mGoodMatch && (mTrackingStatus == TRACKING_GOOD))
         	myThread.setPriority(Thread.NORM_PRIORITY);
         else
         	myThread.setPriority(Thread.NORM_PRIORITY+1);

@@ -22,7 +22,7 @@ public class GraffitisLocationsMap extends Activity {
 	private GraffitiesLocationsOverlay _graffitiLocationsOverlay;
 	private CurrentLocationOverlay _currentLocationOverlay;
 	
-	private final int ZOOM_LEVEL = 13;
+	private final int ZOOM_LEVEL = 16;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);

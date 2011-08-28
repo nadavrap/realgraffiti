@@ -29,7 +29,7 @@ import realgraffiti.common.data.RealGraffitiData;
 
 public class GraffitiMiniMapView extends ViewGroup{
 	private static final float SQ2 = 1.414213562373095f;
-	private static final int ZOOM_LEVEL = 16;
+	private static final int ZOOM_LEVEL = 18;
     private MapView _mapView;
     private RealGraffitiData _realGraffitiData;
     
