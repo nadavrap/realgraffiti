@@ -172,7 +172,8 @@ public class ApplicationDemo extends MapActivity {
 					noLocationAvailibleToast.show();
 				} else{
 					
-					Bitmap graffitiWallImg = _cameraLiveView.getBackgroundImage();
+					Bitmap graffitiWallImg = _cameraLiveView.setModeToPainting();
+
 					String filename =getFilesDir()+ "/wall";
 					FileOutputStream fos = null;
 					try {

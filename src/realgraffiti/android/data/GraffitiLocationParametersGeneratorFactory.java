@@ -20,7 +20,7 @@ public class GraffitiLocationParametersGeneratorFactory {
 	public static GraffitiLocationParametersGenerator getGaffitiLocationParametersGenerator(Context context){
 	    if(_graffitiLocationParametersGenerator == null) {
 	        _graffitiLocationParametersGenerator = new SensorsGraffitiLocationParametersGeneretor(context);
-	        ((SensorsGraffitiLocationParametersGeneretor)_graffitiLocationParametersGenerator).startListening(context);
+	        //((SensorsGraffitiLocationParametersGeneretor)_graffitiLocationParametersGenerator).startListening(context);
 	    }
 	    return _graffitiLocationParametersGenerator;
 	}
