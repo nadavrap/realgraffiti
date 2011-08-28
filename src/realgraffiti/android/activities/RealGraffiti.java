@@ -166,6 +166,9 @@ public class RealGraffiti extends Activity {
 				 GraffitiLocationParameters graffitiLocation = graffiti.getLocationParameters();
 				 Orientation graffitiOrientation = graffitiLocation.getOrientation();
 				 
+				 if(graffitiOrientation == null || currentOrientation == null)
+					 break;
+				 
 				 float orientationDiff = Math.abs(graffitiOrientation.getXorientation()-currentOrientation.getXorientation());
 				 if(orientationDiff>180)
 					 orientationDiff = 360 - orientationDiff;
