@@ -12,6 +12,7 @@ import android.content.Context;
 import android.util.Log;
 
 import realgraffiti.android.data.GraffitiPoller;
+import realgraffiti.android.data.GraffitiUtils;
 import realgraffiti.common.data.RealGraffitiData;
 import realgraffiti.common.dataObjects.Coordinates;
 import realgraffiti.common.dataObjects.Graffiti;
@@ -46,9 +47,9 @@ public class RealGraffitiDataBufferdProxy implements RealGraffitiData {
 
 	@Override
 	public Collection<Graffiti> getNearByGraffiti(
-			GraffitiLocationParameters graffitiLocationParameters) {
+			GraffitiLocationParameters graffitiLocationParameters, int rangeInMeters) {
 		// TODO Auto-generated method stub
-		return _buffredGraffiti;
+		return GraffitiUtils.filterGraffitiesByDistance(_buffredGraffiti, graffitiLocationParameters.getCoordinates(), rangeInMeters);
 	}
 
 	@Override

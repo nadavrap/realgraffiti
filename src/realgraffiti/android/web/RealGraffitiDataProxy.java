@@ -11,6 +11,7 @@ import android.content.Context;
 import android.util.Log;
 
 import realgraffiti.android.R;
+import realgraffiti.android.data.GraffitiUtils;
 import realgraffiti.android.web.WebServiceClient.RequestMethod;
 import realgraffiti.common.data.RealGraffitiData;
 import realgraffiti.common.dataObjects.*;
@@ -47,7 +48,7 @@ public class RealGraffitiDataProxy implements RealGraffitiData{
 	
 	@Override
 	public Collection<Graffiti> getNearByGraffiti(
-			GraffitiLocationParameters graffitiLocationParameters) {
+			GraffitiLocationParameters graffitiLocationParameters, int rangeInMeters) {
 		Log.d("DataProxy","getNearByGraffiti" + " start");
 		String url = _context.getString(R.string.ServerPath);
 		url += "/" + _context.getString(R.string.RealGraffitiDataServlet);
@@ -57,6 +58,7 @@ public class RealGraffitiDataProxy implements RealGraffitiData{
 		String actionName = _context.getString(R.string.getNearByGraffiti);
 		client.addParam(ACTION_KEY, actionName);
 		client.addParam(ACTION_PARAMETER_KEY, graffitiLocationParameters);
+		
 		client.execute(WebServiceClient.RequestMethod.POST);
 		
 		Log.d("DataProxy","client Error: " + client.getErrorMessage());
@@ -66,7 +68,7 @@ public class RealGraffitiDataProxy implements RealGraffitiData{
 		Type collectionType = new TypeToken<ArrayList<Graffiti>>(){}.getType();
 		Collection<Graffiti> nearByGraffiti = (ArrayList<Graffiti>)client.getResponseObject(collectionType);
 		Log.d("DataProxy","getNearByGraffiti" + " end");
-		return nearByGraffiti;		
+		return GraffitiUtils.filterGraffitiesByDistance(nearByGraffiti, graffitiLocationParameters.getCoordinates(), rangeInMeters);		
 	}
 	
 	@Override
