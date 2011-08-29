@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="lib" path="3rdParty/apache-mime4j-0.6.1.jar"/>
+	<classpathentry kind="lib" path="3rdParty/httpclient-4.1.1.jar"/>
+	<classpathentry kind="lib" path="3rdParty/httpcore-4.1.jar"/>
+	<classpathentry kind="lib" path="3rdParty/httpmime-4.1.1.jar"/>
+	<classpathentry kind="lib" path="3rdParty/jdo2-api-2.3-eb.jar"/>
+	<classpathentry kind="lib" path="3rdParty/osmdroid-android-3.0.4.jar"/>
+	<classpathentry kind="lib" path="3rdParty/osmdroid-google-3.0.4.jar"/>
+	<classpathentry kind="lib" path="3rdParty/slf4j-android-1.5.8.jar"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="gen"/>
+	<classpathentry kind="src" path="common"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
+	<classpathentry exported="true" kind="lib" path="/RealGraffitiCommon/Libs/google-gson-1.7.1/gson-1.7.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="/RealGraffitiCommon/Libs/commons-codec-1.5.jar"/>
+	<classpathentry kind="src" path="OpenCV-2.3.1_src"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
