@@ -2,6 +2,7 @@ package realgraffiti.android.data;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.ThreadPoolExecutor.DiscardOldestPolicy;
 
 import realgraffiti.android.web.GraffitiPollListener;
 import realgraffiti.common.data.RealGraffitiData;
@@ -17,11 +18,13 @@ public class GraffitiPoller {
 	private GraffitiPollListener _polllListener;
 	private Context _context;
 	private GraffitiPoll _graffitiPolltask;
+	private int _distanceToPollFor;
 	
-	public GraffitiPoller(Context context, RealGraffitiData realGraffitiData, int pollingIntervapl){
+	public GraffitiPoller(Context context, RealGraffitiData realGraffitiData,int distanceToPollFor, int pollingIntervapl){
 		_realGraffitiData = realGraffitiData;
 		_pollingInterval = pollingIntervapl;
 		_context = context;
+		_distanceToPollFor = distanceToPollFor;
 	}
 	
 	public RealGraffitiData getPolledRealGraffitiData(){
@@ -51,11 +54,11 @@ public class GraffitiPoller {
 				 GraffitiLocationParametersGenerator locationParametersGenerator = 
 					 GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator(_context);
 				 
-				Log.d("GraffitiPoll",  "Location Parameter Available (for GraffitiPoll): " + locationParametersGenerator.isLocationParametersAvailable());
+				//Log.d("GraffitiPoll",  "Location Parameter Available (for GraffitiPoll): " + locationParametersGenerator.isLocationParametersAvailable());
 				
 				if(locationParametersGenerator.isLocationParametersAvailable()){
 					GraffitiLocationParameters graffitiLocationParameters = locationParametersGenerator.getCurrentLocationParameters();
-					graffities = _realGraffitiData.getNearByGraffiti(graffitiLocationParameters);
+					graffities = _realGraffitiData.getNearByGraffiti(graffitiLocationParameters, _distanceToPollFor);
 				
 					publishProgress(graffities);
 				}

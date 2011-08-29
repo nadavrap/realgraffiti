@@ -56,6 +56,8 @@ public class RealGraffiti extends Activity {
 	
 	protected static final CharSequence NO_LOCATION_AVAILIBLE_MESSAGE = "Location not available";
 	protected static final int FINGER_PAINT_ACTIVITY = 0;
+	private static final int PROXIMITY_GRAFFITI_RANGE = 15;
+	private static final int BUFFERED_GRAFFITI_RANGE = 15000;
 
 	// public static int viewMode = VIEW_MODE_RGBA;
 	public static boolean _resetRef = false;
@@ -104,7 +106,7 @@ public class RealGraffiti extends Activity {
 		// RealGraffitiData innerGraffitiData = new RealGraffitiDataProxy(getApplicationContext()); // server storage
 		RealGraffitiData innerGraffitiData = new RealGraffitiLocalData(); // local storage
 
-		_graffitiPoller = new GraffitiPoller(getApplicationContext(), innerGraffitiData, POLLING_INTERVAL);
+		_graffitiPoller = new GraffitiPoller(getApplicationContext(), innerGraffitiData,BUFFERED_GRAFFITI_RANGE,  POLLING_INTERVAL);
 		_graffitiData = new RealGraffitiDataBufferdProxy(getApplicationContext(), _graffitiPoller);
 
 		_miniMapView = (GraffitiMiniMapView) findViewById(R.id.miniMap);
@@ -112,8 +114,8 @@ public class RealGraffiti extends Activity {
 
 		setAddNewGraffitiButton();
 
-		GraffitiLocationParametersGenerator graffitiLocationParametersGenerator = GraffitiLocationParametersGeneratorFactory
-				.getGaffitiLocationParametersGenerator(RealGraffiti.this);
+		//GraffitiLocationParametersGenerator graffitiLocationParametersGenerator = GraffitiLocationParametersGeneratorFactory
+		//		.getGaffitiLocationParametersGenerator(RealGraffiti.this);
 		Log.d("RealGraffiti", "on create done");
 	}
 
@@ -150,13 +152,19 @@ public class RealGraffiti extends Activity {
 
 	private void graffitiUpdateTimerTick() {
 		 Collection<Graffiti> graffities = null;
-		 graffities = _graffitiData.getNearByGraffiti(null);
+		 GraffitiLocationParametersGenerator graffitiLocationParametersGenerator = GraffitiLocationParametersGeneratorFactory
+			.getGaffitiLocationParametersGenerator(getApplicationContext());
+
+		 // Get the current orientation
+		 GraffitiLocationParameters currentLocationParameters = graffitiLocationParametersGenerator.getCurrentLocationParameters();
+		 
+		 if(!graffitiLocationParametersGenerator.isLocationParametersAvailable())
+			 return;
+		 
+		 graffities = _graffitiData.getNearByGraffiti(graffitiLocationParametersGenerator.getCurrentLocationParameters(), PROXIMITY_GRAFFITI_RANGE);
+		 
 		 if(!graffities.isEmpty())
 		 {
-			 // Get the current orientation
-			 GraffitiLocationParametersGenerator graffitiLocationParametersGenerator = 
-					 GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator(RealGraffiti.this);
-			 GraffitiLocationParameters currentLocationParameters = graffitiLocationParametersGenerator.getCurrentLocationParameters();
 			 Orientation currentOrientation = currentLocationParameters.getOrientation();
 //			 Toast.makeText(getApplicationContext(), "Orientation: "+currentOrientation.toString(), Toast.LENGTH_SHORT).show();
 
@@ -238,9 +246,15 @@ public class RealGraffiti extends Activity {
 		super.onStart();
 		Log.d("RealGraffiti", "on start");
 
+		GraffitiLocationParametersGenerator graffitiLocationParametersGenerator = 
+			  GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator(RealGraffiti.this);
+		
+		graffitiLocationParametersGenerator.startTracking();
+		
 		_miniMapView.startOverlays();
 		_graffitiPoller.beginPolling();
 		scheduleGraffitiUpdateTimer();
+		
 	}
 
 	protected void onRestart() {
@@ -257,9 +271,9 @@ public class RealGraffiti extends Activity {
 	protected void onDestroy() {
 		super.onDestroy();
 		Log.d("RealGraffiti", "on destroy");
-		SensorsGraffitiLocationParametersGeneretor graffitiLocationParametersGenerator = 
-				 (SensorsGraffitiLocationParametersGeneretor) GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator(RealGraffiti.this);
-		graffitiLocationParametersGenerator.stopListening();
+		GraffitiLocationParametersGenerator graffitiLocationParametersGenerator = 
+				  GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator(RealGraffiti.this);
+		graffitiLocationParametersGenerator.stopTracking();
 	}
 
 	@Override

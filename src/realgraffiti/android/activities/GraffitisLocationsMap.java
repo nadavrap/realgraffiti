@@ -19,6 +19,7 @@ import android.util.Log;
 import android.widget.LinearLayout;
 
 public class GraffitisLocationsMap extends Activity {
+	private static final int MAP_RANGE_IN_METERS = 5000;
 	private GraffitiesLocationsOverlay _graffitiLocationsOverlay;
 	private CurrentLocationOverlay _currentLocationOverlay;
 	
@@ -37,7 +38,7 @@ public class GraffitisLocationsMap extends Activity {
 	    
 	    Drawable graffitiMarker = this.getResources().getDrawable(R.drawable.spraycan);
 	    RealGraffitiData realGraffitiData = new RealGraffitiLocalData();
-	    _graffitiLocationsOverlay = new GraffitiesLocationsOverlay(this, graffitiMarker, mapView, realGraffitiData);
+	    _graffitiLocationsOverlay = new GraffitiesLocationsOverlay(this, graffitiMarker,MAP_RANGE_IN_METERS, mapView, realGraffitiData);
 	    mapView.getOverlays().add(_graffitiLocationsOverlay);
 	    
 	    Drawable currentLocationMarker = this.getResources().getDrawable(R.drawable.current_location);

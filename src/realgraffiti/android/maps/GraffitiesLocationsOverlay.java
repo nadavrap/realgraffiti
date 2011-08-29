@@ -30,15 +30,18 @@ public class GraffitiesLocationsOverlay extends ItemizedOverlay<OverlayItem> {
 	private GraffitiPoller _graffitiServerPoller = null;
 	private MapView _mapView;
 	private Context _context;
-
+	private int _graffitiesDistance;
+	
 	private static final int DATA_POLLING_INTERVAL = 1000;
 	
-	public GraffitiesLocationsOverlay(Context context, Drawable defaultMarker, MapView mapView, RealGraffitiData realGraffitiData) {
+	public GraffitiesLocationsOverlay(Context context, Drawable defaultMarker, int graffitiesDistance, MapView mapView, RealGraffitiData realGraffitiData) {
 		  super(defaultMarker, mapView.getResourceProxy());
 		  
 		  _realGraffitiData = realGraffitiData;
 		  _mapView = mapView;
 		  _context = context;
+		  _graffitiesDistance = graffitiesDistance;
+		  
 		  populate();
 	}
 	
@@ -88,7 +91,7 @@ public class GraffitiesLocationsOverlay extends ItemizedOverlay<OverlayItem> {
 	}
 
 	private void initializeGraffitiServerPoller() {
-	    _graffitiServerPoller = new GraffitiPoller(_context, _realGraffitiData, DATA_POLLING_INTERVAL);
+	    _graffitiServerPoller = new GraffitiPoller(_context, _realGraffitiData, _graffitiesDistance, DATA_POLLING_INTERVAL);
 	    
 	    _graffitiServerPoller.setOnPoll(new GraffitiPollListener() {
 			@Override
