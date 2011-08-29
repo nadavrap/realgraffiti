@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import android.location.Location;
+
 import realgraffiti.common.data.RealGraffitiData;
 import realgraffiti.common.dataObjects.*;
 
@@ -24,7 +26,8 @@ public class RealGraffitiLocalData implements RealGraffitiData {
 
 	@Override
 	public Collection<Graffiti> getNearByGraffiti(
-			GraffitiLocationParameters graffitiLocationParameters) {
+			GraffitiLocationParameters graffitiLocationParameters, int rangeInMeters) {
+		List<Graffiti> nearByGraffities = GraffitiUtils.filterGraffitiesByDistance(_graffiteis,graffitiLocationParameters.getCoordinates(), rangeInMeters);
 		return new ArrayList<Graffiti>(_graffiteis);
 	}
 
@@ -41,5 +44,7 @@ public class RealGraffitiLocalData implements RealGraffitiData {
 
 		return allImageData;
 	}
+	
+
 
 }
