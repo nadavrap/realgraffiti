@@ -36,4 +36,16 @@ public class GraffitiLocationParametersFakeGenerator implements
 		// TODO Auto-generated method stub
 		return true;
 	}
+
+	@Override
+	public void startTracking() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void stopTracking() {
+		// TODO Auto-generated method stub
+		
+	}
 }
