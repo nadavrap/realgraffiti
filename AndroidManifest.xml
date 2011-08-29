@@ -40,6 +40,13 @@
                   android:label="@string/paint_act"
                   android:screenOrientation="landscape">
         </activity>
+        <activity android:name=".maps.MapViewCompassDemo"
+                  android:label="MapViewCompassDemo">
+        	<intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <service android:name=".data.SensorsService"/>
     </application>
 </manifest>
