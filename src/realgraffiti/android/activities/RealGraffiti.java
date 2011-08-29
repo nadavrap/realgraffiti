@@ -112,8 +112,8 @@ public class RealGraffiti extends Activity {
 
 		setAddNewGraffitiButton();
 
-		GraffitiLocationParametersGenerator graffitiLocationParametersGenerator = GraffitiLocationParametersGeneratorFactory
-				.getGaffitiLocationParametersGenerator(RealGraffiti.this);
+		//GraffitiLocationParametersGenerator graffitiLocationParametersGenerator = GraffitiLocationParametersGeneratorFactory
+		//		.getGaffitiLocationParametersGenerator(RealGraffiti.this);
 		Log.d("RealGraffiti", "on create done");
 	}
 
@@ -238,9 +238,15 @@ public class RealGraffiti extends Activity {
 		super.onStart();
 		Log.d("RealGraffiti", "on start");
 
+		GraffitiLocationParametersGenerator graffitiLocationParametersGenerator = 
+			  GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator(RealGraffiti.this);
+		
+		graffitiLocationParametersGenerator.startTracking();
+		
 		_miniMapView.startOverlays();
 		_graffitiPoller.beginPolling();
 		scheduleGraffitiUpdateTimer();
+		
 	}
 
 	protected void onRestart() {
@@ -257,9 +263,9 @@ public class RealGraffiti extends Activity {
 	protected void onDestroy() {
 		super.onDestroy();
 		Log.d("RealGraffiti", "on destroy");
-		SensorsGraffitiLocationParametersGeneretor graffitiLocationParametersGenerator = 
-				 (SensorsGraffitiLocationParametersGeneretor) GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator(RealGraffiti.this);
-		graffitiLocationParametersGenerator.stopListening();
+		GraffitiLocationParametersGenerator graffitiLocationParametersGenerator = 
+				  GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator(RealGraffiti.this);
+		graffitiLocationParametersGenerator.stopTracking();
 	}
 
 	@Override

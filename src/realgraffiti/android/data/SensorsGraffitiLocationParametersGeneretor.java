@@ -24,21 +24,25 @@ public class SensorsGraffitiLocationParametersGeneretor implements GraffitiLocat
 	private SensorEventListener _magnetlistener;
 	private SensorManager _mySensorManager;
 	private static final int TWO_MINUTES = 1000 * 60 * 2;
-
+	private Context _context;
+	
 	@Override
 	public GraffitiLocationParameters getCurrentLocationParameters() {
 		GraffitiLocationParameters glp = new GraffitiLocationParameters(_graffitiLocationParameters);
 		return glp;
 
 	}
-	public void stopListening(){
+	
+	@Override
+	public void stopTracking(){
 		Log.d("RealGraffiti", "SensorsGraffitiLocationParametersGeneretor - stop Listening");
 		_myLocationManager.removeUpdates(_myLocationListener);
 		_mySensorManager.unregisterListener(_magnetlistener);
 	}
 	
+	
 	public SensorsGraffitiLocationParametersGeneretor(Context context) {
-		startListening(context);
+		_context = context;
 	}
 
 	@Override
@@ -46,9 +50,10 @@ public class SensorsGraffitiLocationParametersGeneretor implements GraffitiLocat
 		return isLocationParametersAvailable;
 	};
 	
-	public void startListening(Context context){
+	@Override
+	public void startTracking(){
 		Log.d("RealGraffiti", "SensorsGraffitiLocationParametersGeneretor - start Listening");
-		_myLocationManager = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
+		_myLocationManager = (LocationManager)_context.getSystemService(Context.LOCATION_SERVICE);
 		_myLocationListener = new MyLocationListener();
 		_myLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,_myLocationListener);
 		
@@ -71,7 +76,7 @@ public class SensorsGraffitiLocationParametersGeneretor implements GraffitiLocat
   	  	}
 		
 		// First, get an instance of the SensorManager
-	    _mySensorManager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
+	    _mySensorManager = (SensorManager)_context.getSystemService(Context.SENSOR_SERVICE);
 	    // Second, get the sensor you're interested in
 	    Sensor magnetfield = _mySensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
 	    // Third, implement a SensorEventListener class
