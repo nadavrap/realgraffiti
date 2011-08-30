@@ -14,7 +14,6 @@ import realgraffiti.android.data.GraffitiLocationParametersGenerator;
 import realgraffiti.android.data.GraffitiLocationParametersGeneratorFactory;
 import realgraffiti.android.data.GraffitiPoller;
 import realgraffiti.android.data.RealGraffitiLocalData;
-import realgraffiti.android.data.SensorsGraffitiLocationParametersGeneretor;
 import realgraffiti.android.maps.GraffitiMiniMapView;
 import realgraffiti.android.web.RealGraffitiDataBufferdProxy;
 import realgraffiti.common.data.RealGraffitiData;
@@ -56,7 +55,7 @@ public class RealGraffiti extends Activity {
 	
 	protected static final CharSequence NO_LOCATION_AVAILIBLE_MESSAGE = "Location not available";
 	protected static final int FINGER_PAINT_ACTIVITY = 0;
-	private static final int PROXIMITY_GRAFFITI_RANGE = 15;
+	private static final int PROXIMITY_GRAFFITI_RANGE = 50;
 	private static final int BUFFERED_GRAFFITI_RANGE = 15000;
 
 	// public static int viewMode = VIEW_MODE_RGBA;
@@ -103,7 +102,7 @@ public class RealGraffiti extends Activity {
 		// change the comment between the following lines to switch between
 		// server and local storage:
 
-		// RealGraffitiData innerGraffitiData = new RealGraffitiDataProxy(getApplicationContext()); // server storage
+		//RealGraffitiData innerGraffitiData = new RealGraffitiDataProxy(getApplicationContext()); // server storage
 		RealGraffitiData innerGraffitiData = new RealGraffitiLocalData(); // local storage
 
 		_graffitiPoller = new GraffitiPoller(getApplicationContext(), innerGraffitiData,BUFFERED_GRAFFITI_RANGE,  POLLING_INTERVAL);
@@ -200,8 +199,16 @@ public class RealGraffiti extends Activity {
 				 {
 					 if(orientationDiff<=ORIENTAION_MATCH_DIFFERENCE)
 					 {
-						 byte[] graffitiImgBytes = graffiti.getImageData();
-						 byte[] wallImgBytes = graffiti.getWallImageData();
+//						 byte[] graffitiImgBytes = graffiti.getImageData();
+//						 byte[] wallImgBytes = graffiti.getWallImageData();
+						 byte[] graffitiImgBytes = _graffitiData.getGraffitiImage(graffiti.getKey());
+						 byte[] wallImgBytes = _graffitiData.getGraffitiWallImage(graffiti.getKey());
+						 
+						 if( (graffitiImgBytes == null) || (wallImgBytes == null) )
+						 {
+								Log.e("RealGraffiti", "graffitiUpdateTimerTick - failed retrieving bitmaps");
+								break;							 
+						 }
 						 Bitmap graffitiImage = BitmapFactory.decodeByteArray(graffitiImgBytes, 0, graffitiImgBytes.length);
 						 Bitmap wallImage = BitmapFactory.decodeByteArray(wallImgBytes, 0, wallImgBytes.length);
 		
@@ -214,7 +221,7 @@ public class RealGraffiti extends Activity {
 							playSound(SOUND_ID_TING);
 						 }
 						 else
-							Log.d("RealGraffiti", "graffitiUpdateTimerTick - failed retrieving bitmaps");
+							Log.e("RealGraffiti", "graffitiUpdateTimerTick - failed retrieving bitmaps");
 					 
 						 break;
 					 }
@@ -314,7 +321,10 @@ public class RealGraffiti extends Activity {
 					GraffitiLocationParameters currentLocationParameters = graffitiLocationParametersGenerator.getCurrentLocationParameters();
 					_paintedGraffiti.setLocationParameters(currentLocationParameters);
 
-					_paintedGraffiti.setWallImageData(bitmapToByteArray(graffitiWallImg));
+					// Compress the wall image into a ByteArray in PNG format
+					ByteArrayOutputStream bos = new ByteArrayOutputStream();
+					graffitiWallImg.compress(Bitmap.CompressFormat.PNG, 90, bos);
+					_paintedGraffiti.setWallImageData(bos.toByteArray());
 
 					String filename = getFilesDir() + "/wall";
 					FileOutputStream fos = null;
@@ -350,8 +360,11 @@ public class RealGraffiti extends Activity {
 				if (_backgroundLocation != null) { 
 					// Get painted graffiti and update the database
 					Bitmap graffitiBitMap = BitmapFactory.decodeFile(_backgroundLocation).copy(Bitmap.Config.ARGB_8888,true);
-					byte[] imageData = bitmapToByteArray(graffitiBitMap);
-					_paintedGraffiti.setImageData(imageData);
+					// Compress the graffiti image into a ByteArray in PNG format
+					ByteArrayOutputStream bos = new ByteArrayOutputStream();
+					graffitiBitMap.compress(Bitmap.CompressFormat.PNG, 90, bos);
+//					byte[] imageData = bitmapToByteArray(graffitiBitMap);
+					_paintedGraffiti.setImageData(bos.toByteArray());
 
 					AddNewGraffitiTask addGraffitiTask = new AddNewGraffitiTask();
 					addGraffitiTask.execute(_paintedGraffiti);
