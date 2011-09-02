@@ -9,6 +9,7 @@ import realgraffiti.common.dataObjects.Graffiti;
 import android.location.Location;
 
 public class GraffitiUtils {
+	private static final int E6 = 1000000;
 	public static List<Graffiti> filterGraffitiesByDistance(
 			Collection<Graffiti> graffities,Coordinates currentCoordinates, int distanceInMeters) {
 		
@@ -27,8 +28,8 @@ public class GraffitiUtils {
 
 	public static Location coordinatesToLocation(Coordinates coordinates) {
 		Location location = new Location("My provider");
-		location.setLatitude(coordinates.getLatitude());
-		location.setLongitude(coordinates.getLongitude());
+		location.setLatitude(coordinates.getLatitude()/E6);
+		location.setLongitude(coordinates.getLongitude()/E6);
 		return location;
 	}
 }

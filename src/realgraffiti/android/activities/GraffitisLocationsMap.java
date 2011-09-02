@@ -11,6 +11,7 @@ import realgraffiti.common.dataObjects.GraffitiLocationParameters;
 import realgraffiti.android.data.*;
 import realgraffiti.android.maps.CurrentLocationOverlay;
 import realgraffiti.android.maps.GraffitiesLocationsOverlay;
+import realgraffiti.android.web.RealGraffitiDataProxy;
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
@@ -23,7 +24,7 @@ public class GraffitisLocationsMap extends Activity {
 	private GraffitiesLocationsOverlay _graffitiLocationsOverlay;
 	private CurrentLocationOverlay _currentLocationOverlay;
 	
-	private final int ZOOM_LEVEL = 16;
+	private final int ZOOM_LEVEL = 14;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
@@ -36,8 +37,8 @@ public class GraffitisLocationsMap extends Activity {
 	    //mapView.setSatellite(true);
 	    mapView.getController().setZoom(ZOOM_LEVEL);
 	    
-	    Drawable graffitiMarker = this.getResources().getDrawable(R.drawable.spraycan);
-	    RealGraffitiData realGraffitiData = new RealGraffitiLocalData();
+	    Drawable graffitiMarker = this.getResources().getDrawable(R.drawable.graffiti_marker);
+	    RealGraffitiData realGraffitiData = new RealGraffitiDataProxy(getApplicationContext()); // server storage
 	    _graffitiLocationsOverlay = new GraffitiesLocationsOverlay(this, graffitiMarker,MAP_RANGE_IN_METERS, mapView, realGraffitiData);
 	    mapView.getOverlays().add(_graffitiLocationsOverlay);
 	    

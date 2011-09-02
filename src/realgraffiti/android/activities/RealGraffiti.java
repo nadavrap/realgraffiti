@@ -16,6 +16,7 @@ import realgraffiti.android.data.GraffitiPoller;
 import realgraffiti.android.data.RealGraffitiLocalData;
 import realgraffiti.android.maps.GraffitiMiniMapView;
 import realgraffiti.android.web.RealGraffitiDataBufferdProxy;
+import realgraffiti.android.web.RealGraffitiDataProxy;
 import realgraffiti.common.data.RealGraffitiData;
 import realgraffiti.common.dataObjects.Graffiti;
 import realgraffiti.common.dataObjects.GraffitiLocationParameters;
@@ -102,8 +103,8 @@ public class RealGraffiti extends Activity {
 		// change the comment between the following lines to switch between
 		// server and local storage:
 
-		//RealGraffitiData innerGraffitiData = new RealGraffitiDataProxy(getApplicationContext()); // server storage
-		RealGraffitiData innerGraffitiData = new RealGraffitiLocalData(); // local storage
+		RealGraffitiData innerGraffitiData = new RealGraffitiDataProxy(getApplicationContext()); // server storage
+		//RealGraffitiData innerGraffitiData = new RealGraffitiLocalData(); // local storage
 
 		_graffitiPoller = new GraffitiPoller(getApplicationContext(), innerGraffitiData,BUFFERED_GRAFFITI_RANGE,  POLLING_INTERVAL);
 		_graffitiData = new RealGraffitiDataBufferdProxy(getApplicationContext(), _graffitiPoller);

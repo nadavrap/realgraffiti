@@ -32,7 +32,7 @@ import android.view.ViewGroup;
 public class GraffitiMiniMapView extends ViewGroup{
 	private static final int MAP_RANGE_IN_METERS = 1000;
 	private static final float SQ2 = 1.414213562373095f;
-	private static final int ZOOM_LEVEL = 18;
+	private static final int ZOOM_LEVEL = 17;
 	
 	private MapView _mapView;
 	private RealGraffitiData _realGraffitiData;
@@ -85,7 +85,7 @@ public class GraffitiMiniMapView extends ViewGroup{
 	public void setRealGraffitiData(RealGraffitiData realGraffitiData){
 		_realGraffitiData = realGraffitiData;
 
-		Drawable graffitiMarker = this.getResources().getDrawable(R.drawable.graffiti_mark);
+		Drawable graffitiMarker = this.getResources().getDrawable(R.drawable.graffiti_marker_mini);
 		_graffitiesLocationOverlay = new GraffitiesLocationsOverlay(_context, graffitiMarker,MAP_RANGE_IN_METERS,  _mapView, _realGraffitiData);
 		_mapView.getOverlays().add(_graffitiesLocationOverlay);
 	}
