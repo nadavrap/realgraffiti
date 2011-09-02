@@ -96,13 +96,13 @@ public class WebServiceClient {
     public void addParam(String name, Object value)
     {
         _params.put(name, value);
-        Log.d("RealGraffiti: WebServiceClient", "Add param " + name + ": " + value.toString());
+        Log.d("RealGraffiti: WebServiceClient", "Add param " + name);
     }
  
     public void addHeader(String name, String value)
     {
         _headers.add(new BasicNameValuePair(name, value));
-        Log.d("RealGraffiti: WebServiceClient", "Add header " + name + ": " + value.toString());
+        Log.d("RealGraffiti: WebServiceClient", "Add header " + name + ": " + value);
     }
  
     public void addFile(String name, byte[] content){
