@@ -25,12 +25,12 @@ public class RealGraffitiDataProxy implements RealGraffitiData{
 	
 	public RealGraffitiDataProxy(Context context){
 		_context = context;
-		Log.d("DataProxy","Created");
+		Log.d("RealGraffiti: DataProxy","Created");
 	}
 	
 	@Override
 	public boolean addNewGraffiti(Graffiti graffiti){	
-		Log.d("realgraffiti", "Add new graffiti");
+		Log.d("RealGraffiti: DataProxy","Add new graffiti");
 		
 		String serverPath = _context.getString(R.string.ServerPath);
 		String url = serverPath + "/" +  _context.getString(R.string.RealGraffitiDataServlet);
@@ -49,10 +49,11 @@ public class RealGraffitiDataProxy implements RealGraffitiData{
 	@Override
 	public Collection<Graffiti> getNearByGraffiti(
 			GraffitiLocationParameters graffitiLocationParameters, int rangeInMeters) {
-		Log.d("DataProxy","getNearByGraffiti" + " start");
+		Log.d("RealGraffiti: DataProxy","Get near by graffiti start");
+		
 		String url = _context.getString(R.string.ServerPath);
 		url += "/" + _context.getString(R.string.RealGraffitiDataServlet);
-		Log.d("DataProxy", "URL: " + url);
+		Log.d("RealGraffiti: DataProxy", "URL: " + url);
 		
 		WebServiceClient client = new WebServiceClient(url);
 		String actionName = _context.getString(R.string.getNearByGraffiti);
@@ -61,14 +62,13 @@ public class RealGraffitiDataProxy implements RealGraffitiData{
 		
 		client.execute(WebServiceClient.RequestMethod.POST);
 		
-		Log.d("DataProxy","client Error: " + client.getErrorMessage());
-		Log.d("DataProxy","client responseCode: " + client.getResponseCode());
-		//Log.d("DataProxy","client responseString: " + client.getResponseString());
-		
 		Type collectionType = new TypeToken<ArrayList<Graffiti>>(){}.getType();
-		Collection<Graffiti> nearByGraffiti = (ArrayList<Graffiti>)client.getResponseObject(collectionType);
-		Log.d("DataProxy","getNearByGraffiti" + " end");
-		return GraffitiUtils.filterGraffitiesByDistance(nearByGraffiti, graffitiLocationParameters.getCoordinates(), rangeInMeters);		
+		Collection<Graffiti> allGraffiti = (ArrayList<Graffiti>)client.getResponseObject(collectionType);
+		Collection<Graffiti> nearByGraffiti = GraffitiUtils.filterGraffitiesByDistance(allGraffiti, graffitiLocationParameters.getCoordinates(), rangeInMeters);
+		
+		Log.d("RealGraffiti: DataProxy" , "Recieved " + allGraffiti.size() + " graffiti, " + nearByGraffiti.size() + " of them are near by");
+		Log.d("RealGraffiti: DataProxy","Get near by graffiti end");
+		return nearByGraffiti;		
 	}
 	
 	@Override

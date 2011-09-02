@@ -55,7 +55,7 @@ public class GraffitiPoller {
 					 GraffitiLocationParametersGeneratorFactory.getGaffitiLocationParametersGenerator(_context);
 				 
 				//Log.d("GraffitiPoll",  "Location Parameter Available (for GraffitiPoll): " + locationParametersGenerator.isLocationParametersAvailable());
-				
+				//Log.d("RealGraffiti: GraffitiPoller", "")
 				if(locationParametersGenerator.isLocationParametersAvailable()){
 					GraffitiLocationParameters graffitiLocationParameters = locationParametersGenerator.getCurrentLocationParameters();
 					graffities = _realGraffitiData.getNearByGraffiti(graffitiLocationParameters, _distanceToPollFor);

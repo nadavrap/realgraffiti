@@ -44,31 +44,33 @@ public class WebServiceClient {
 		GET
 	}
 
-    private ArrayList <NameValuePair> headers;
-    private Map<String, Object> params;
-    private Map<String, byte[]> files;
+    private ArrayList <NameValuePair> _headers;
+    private Map<String, Object> _params;
+    private Map<String, byte[]> _files;
     
-    private String url;
+    private String _url;
  
-    private int responseCode;
-    private String message;
+    private int _responseCode;
+    private String _message;
  
-    private InputStream response;
+    private InputStream _response;
+    private String _responseString;
  
     public WebServiceClient(String url)
     {
-        this.url = url;
-        params = new HashMap<String, Object> ();
-        headers = new ArrayList<NameValuePair>();
-        files = new HashMap<String, byte[]>();
+        this._url = url;
+        _params = new HashMap<String, Object> ();
+        _headers = new ArrayList<NameValuePair>();
+        _files = new HashMap<String, byte[]>();
     }
     
     public String getResponseString() {
-        try {
-			return convertStreamToString(response);
-		} catch (IOException e) {
-			throw new WebServiceClientException("WebServiceClient Error", e);
-		}
+        //try {
+			//return convertStreamToString(_response);
+        	return _responseString;
+		//} catch (IOException e) {
+		//	throw new WebServiceClientException("WebServiceClient Error", e);
+	    //}
     }
  
     public Object getResponseObject(Type typeOfObject){   	
@@ -79,66 +81,71 @@ public class WebServiceClient {
     }
     
     public InputStream getResponseInputStream(){
-    	return response;
+    	return _response;
     }
     
     public String getErrorMessage() {
-        return message;
+        return _message;
     }
  
     public int getResponseCode() {
-        return responseCode;
+        return _responseCode;
     }
  
  
     public void addParam(String name, Object value)
     {
-        params.put(name, value);
+        _params.put(name, value);
+        Log.d("RealGraffiti: WebServiceClient", "Add param " + name + ": " + value.toString());
     }
  
     public void addHeader(String name, String value)
     {
-        headers.add(new BasicNameValuePair(name, value));
+        _headers.add(new BasicNameValuePair(name, value));
+        Log.d("RealGraffiti: WebServiceClient", "Add header " + name + ": " + value.toString());
     }
  
     public void addFile(String name, byte[] content){
-    	files.put(name, content);
+    	_files.put(name, content);
+    	Log.d("RealGraffiti: WebServiceClient", "Add File " + name);
     }
     
     
     public void execute(RequestMethod method)
     {
+    	Log.d("RealGraffiti: WebServiceClient", "Execute start");
 		HttpUriRequest request = null;
  		
 		
 		switch(method){
 		case POST:		
-			request = preparePostRequest(url);
+			request = preparePostRequest(_url);
 			break;
 		case GET:
-			request = prepareGetRequest(url);
+			request = prepareGetRequest(_url);
 			break;
 		}
 		
 		addHeadersToRequest(request);
 		
-		executeRequest(request, url);
+		executeRequest(request, _url);
+		Log.d("RealGraffiti: WebServiceClient", "Execute end");
 	}
 
 	private HttpGet prepareGetRequest(String url) {
         //add parameters
         String combinedParams = "";
-        if(!params.isEmpty()){
+        if(!_params.isEmpty()){
             combinedParams = createParametersQueryString();
         }
-        Log.d("realgraffiti", "prepering GET request: " + url + combinedParams);
+        Log.d("RealGraffiti: WebServiceClient", "prepering GET request: " + url + combinedParams);
         HttpGet request = new HttpGet(url + combinedParams);
         return request;
 	}
 
 	private String createParametersQueryString(){
 		String combinedParams = "?";
-		for(Entry<String, Object> entry: params.entrySet())
+		for(Entry<String, Object> entry: _params.entrySet())
 		{
 		    String paramString;
 			try {
@@ -161,7 +168,7 @@ public class WebServiceClient {
 
 	private HttpPost preparePostRequest(String url) {
 		HttpPost request = new HttpPost(url);
-		if(files.size() > 0){
+		if(_files.size() > 0){
 			prepareMultipartPostRequest(request);
 		}
 		else{
@@ -173,14 +180,14 @@ public class WebServiceClient {
 
 	private void preparePostRequestWithoutFiles(HttpPost request) {
 		// TODO Auto-generated method stub
-		
+		Log.d("RealGraffiti: WebServiceClient", "Prepare post request. URL: " + _url);
 		List<BasicNameValuePair> parameters = new ArrayList<BasicNameValuePair>();
 		
-		for(Entry<String, Object> entry: params.entrySet()){
+		for(Entry<String, Object> entry: _params.entrySet()){
 			StringBody paramValue;
 
 			String json = JsonConverter.toJson(entry.getValue());
-			Log.d("realgraffiti", "json of " + entry.getKey() + " :" + json);
+			Log.d("RealGraffiti: WebServiceClient", " json of " + entry.getKey() + " :" + json);
 						
 			parameters.add(new BasicNameValuePair(entry.getKey(), json));
 		}
@@ -193,13 +200,15 @@ public class WebServiceClient {
 	}
 
 	private void addHeadersToRequest(HttpUriRequest request) {
-		for(NameValuePair h : headers)
+		for(NameValuePair h : _headers)
 		{
 		    request.addHeader(h.getName(), h.getValue());
 		}
 	}
 
-	private void prepareMultipartPostRequest(HttpPost request) {	
+	private void prepareMultipartPostRequest(HttpPost request) {
+		Log.d("RealGraffiti: WebServiceClient", "Prepare Multipart post request. URL: " + _url);
+		
 		MultipartEntity httpEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
 		
 		addFilesToMultipartEntity(httpEntity);
@@ -209,11 +218,11 @@ public class WebServiceClient {
 	}
 
 	private void addParametersToMultipartEntity(MultipartEntity httpEntity) {
-		if(!params.isEmpty()){
+		if(!_params.isEmpty()){
 			
-			for(Entry<String, Object> entry: params.entrySet()){
+			for(Entry<String, Object> entry: _params.entrySet()){
 				String json = JsonConverter.toJson(entry.getValue());
-				Log.d("realgraffiti", "json of " + entry.getKey() + " :" + json);
+				Log.d("RealGraffiti: WebServiceClient", "json of " + entry.getKey() + " :" + json);
 				
 				StringBody paramValue;
 				try {
@@ -228,8 +237,8 @@ public class WebServiceClient {
 
 	private void addFilesToMultipartEntity(MultipartEntity httpEntity) {
 		int i = 0;
-		for(String name:files.keySet()){
-			ByteArrayBody fileContent = new ByteArrayBody(files.get(name), name);
+		for(String name:_files.keySet()){
+			ByteArrayBody fileContent = new ByteArrayBody(_files.get(name), name);
 			httpEntity.addPart("file" + i, fileContent);
 		}
 	}
@@ -243,19 +252,22 @@ public class WebServiceClient {
         try {
             httpResponse = client.execute(request);
             
-            responseCode = httpResponse.getStatusLine().getStatusCode();
-            message = httpResponse.getStatusLine().getReasonPhrase();
-            
-            Log.d("realgraffiti", "Response code: " + responseCode);
+            _responseCode = httpResponse.getStatusLine().getStatusCode();
+            _message = httpResponse.getStatusLine().getReasonPhrase();
             
             HttpEntity entity = httpResponse.getEntity();
  
             if (entity != null) {
  
                 InputStream instream = entity.getContent();
-                response = instream;
+                _response = instream;
+                _responseString = convertStreamToString(instream);
             }
- 
+            
+            Log.d("RealGraffiti: WebServiceClient", "Execute complete.");
+            Log.d("RealGraffiti: WebServiceClient", "Response code: " + _responseCode + " " + _message);
+            Log.d("RealGraffiti: WebServiceClient", "Response : " + _responseString);
+            
         } catch (ClientProtocolException e)  {
             client.getConnectionManager().shutdown();
             throw new WebServiceClientException("RestClient error", e);

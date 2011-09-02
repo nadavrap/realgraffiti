@@ -36,7 +36,7 @@ public class RealGraffitiDataBufferdProxy implements RealGraffitiData {
 					
 					
 				}
-				Log.d("realgraffiti", "poll data of size: " + graffities.size());
+				//Log.d("RealGraffiti: BufferdDataProxy", "poll data of size: " + graffities.size());
 			}});
 	}
 	
